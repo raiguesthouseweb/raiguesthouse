@@ -5,7 +5,7 @@ const cors = require('cors');
 const app = express();
 
 // Update the Apps Script URL
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzZY6a4f7CG4C373daFARv1AEga6mxWUV2ngCcCrU3cqXfISi0goPSJqk8Qc73vGymm/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwM3lnjAtuWd8YYRfeepYgvL8eSsxqqOMNrYvE2eMDqHqombWX_O0BAhukD97RDxz6/exec';
 
 // Enable CORS for all origins
 app.use(cors({
@@ -32,7 +32,7 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     res.header('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin');
-    res.header('Content-Type', 'application/json'); // Explicitly set Content-Type
+    res.header('Content-Type', 'application/json');
     next();
 });
 
@@ -48,12 +48,11 @@ app.get('/menu', async (req, res) => {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            timeout: 15000 // Increase timeout to 15 seconds
+            timeout: 15000
         });
 
         console.log('Menu response:', response.data);
 
-        // Check if response is an error
         if (response.data.status === 'error') {
             throw new Error(response.data.message);
         }
@@ -88,7 +87,7 @@ app.post('/submit-order', async (req, res) => {
             data: {
                 roomNumber: req.body.roomNumber,
                 mobileNumber: req.body.mobileNumber,
-                orderItems: req.body.cart, // Changed from req.body.items to req.body.cart
+                orderItems: req.body.cart,
                 total: req.body.total,
                 timestamp: new Date().toISOString()
             }
@@ -104,18 +103,16 @@ app.post('/submit-order', async (req, res) => {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
-                timeout: 15000 // Increased timeout to 15 seconds
+                timeout: 15000
             }
         );
 
         console.log('Apps Script response:', response.data);
 
-        // Validate Apps Script response
         if (!response.data || typeof response.data !== 'object') {
             throw new Error('Invalid response from Apps Script');
         }
 
-        // Ensure response matches expected format
         if (response.data.status === 'success') {
             res.json({ status: 'success', message: 'Order submitted successfully' });
         } else {
