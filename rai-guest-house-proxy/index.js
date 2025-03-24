@@ -4,10 +4,8 @@ const cors = require('cors');
 
 const app = express();
 
-// Update the Apps Script URL
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJSmd0oBkboseiVTOrHOQbBo1wWOi5Z237WmbbZtpz4wv3BZD6X3Ttk-TtzOSsei2K/exec';
 
-// Enable CORS for all origins
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'OPTIONS'],
@@ -18,7 +16,6 @@ app.use(cors({
 
 app.use(express.json());
 
-// Log incoming requests
 app.use((req, res, next) => {
     console.log('Incoming request:', req.method, req.url);
     console.log('Raw request body:', req.body);
@@ -26,7 +23,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Ensure CORS headers are set for all responses
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -77,18 +73,49 @@ app.get('/menu', async (req, res) => {
 app.post('/submit-order', async (req, res) => {
     try {
         console.log('Submitting order...', req.body);
+
+        // Validate request body
         if (!req.body || Object.keys(req.body).length === 0) {
-            throw new Error('Request body khali hai.');
+            throw new Error('Request body is empty');
+        }
+
+        const { roomNumber, mobileNumber, cart, total } = req.body;
+
+        // Validate required fields
+        if (!roomNumber || typeof roomNumber !== 'string') {
+            throw new Error('Room number is required and must be a string');
+        }
+        if (!mobileNumber || typeof mobileNumber !== 'string') {
+            throw new Error('Mobile number is required and must be a string');
+        }
+        if (!Array.isArray(cart) || cart.length === 0) {
+            throw new Error('Cart must be a non-empty array');
+        }
+        if (typeof total !== 'number' || total <= 0) {
+            throw new Error('Total must be a positive number');
+        }
+
+        // Validate cart items
+        for (const item of cart) {
+            if (!item.name || typeof item.name !== 'string') {
+                throw new Error('Each cart item must have a valid name');
+            }
+            if (typeof item.price !== 'number' || item.price <= 0) {
+                throw new Error('Each cart item must have a valid price');
+            }
+            if (typeof item.quantity !== 'number' || item.quantity <= 0) {
+                throw new Error('Each cart item must have a valid quantity');
+            }
         }
 
         const orderDataWithSheet = {
             action: 'submitOrder',
             spreadsheetId: '1RzPVjVA635R8GgjKSsvTLW2tC-FpVB0JdwVpp7ffVys',
             data: {
-                roomNumber: req.body.roomNumber,
-                mobileNumber: req.body.mobileNumber,
-                orderItems: req.body.cart,
-                total: req.body.total,
+                roomNumber: roomNumber,
+                mobileNumber: mobileNumber,
+                orderItems: cart,
+                total: total,
                 timestamp: new Date().toISOString()
             }
         };
@@ -107,15 +134,18 @@ app.post('/submit-order', async (req, res) => {
             }
         );
 
-        console.log('Apps Script response:', response.data);
+        console.log('Apps Script response status:', response.status);
+        console.log('Apps Script response data:', response.data);
 
         if (!response.data || typeof response.data !== 'object') {
             throw new Error('Invalid response from Apps Script');
         }
 
         if (response.data.status === 'success') {
+            console.log('Order submitted successfully');
             res.json({ status: 'success', message: 'Order submitted successfully' });
         } else {
+            console.log('Apps Script error:', response.data.message);
             throw new Error(response.data.message || 'Unknown error from Apps Script');
         }
     } catch (error) {
