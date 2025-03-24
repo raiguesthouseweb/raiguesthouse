@@ -45,11 +45,12 @@ async function fetchMenu() {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
-            }
+            },
+            mode: 'cors' // CORS mode add kiya
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
         }
 
         const menuItems = await response.json();
@@ -160,7 +161,7 @@ function removeFromCart(name, price) {
 // ✅ Submit order (with Vercel Proxy)
 async function submitOrder() {
     if (cart.length === 0) {
-        alert('कृपया कुछ आइटम्स ऑर्डर करें');
+        alert('कृपया कुछ आइटम्स ऑर्डर करें / Please add some items to order');
         return;
     }
 
@@ -169,12 +170,12 @@ async function submitOrder() {
     const termsAccepted = document.getElementById('terms-checkbox').checked;
 
     if (!roomNumber || !mobileNumber) {
-        alert('कृपया रूम नंबर और मोबाइल नंबर दोनों भरें');
+        alert('कृपया रूम नंबर और मोबाइल नंबर दोनों भरें / Please enter both room number and mobile number');
         return;
     }
 
     if (!termsAccepted) {
-        alert('कृपया नीचे दिए गए checkbox को टिक करें');
+        alert('कृपया नीचे दिए गए checkbox को टिक करें / Please check the terms checkbox below');
         return;
     }
 
@@ -190,20 +191,34 @@ async function submitOrder() {
 
         const response = await fetch(API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(orderData),
+            mode: 'cors' // CORS mode add kiya
         });
+
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
+        }
 
         const result = await response.json();
         console.log('Response body:', result);
 
         if (result.status === 'success') {
-            alert('Order placed successfully!');
+            alert('Order placed successfully! / ऑर्डर सफलतापूर्वक रखा गया!');
             cart = [];
             total = 0;
             updateCart();
+            document.getElementById('room-number').value = '';
+            document.getElementById('mobile-number').value = '';
+            document.getElementById('terms-checkbox').checked = false;
         } else {
-            alert('Error placing order: ' + result.message);
+            throw new Error(result.message || 'Unknown error occurred');
         }
     } catch (error) {
         console.error('Error submitting order:', error);
