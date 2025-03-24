@@ -32,6 +32,7 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     res.header('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin');
+    res.header('Content-Type', 'application/json'); // Explicitly set Content-Type
     next();
 });
 
@@ -57,7 +58,6 @@ app.get('/menu', async (req, res) => {
             throw new Error(response.data.message);
         }
 
-        res.setHeader('Access-Control-Allow-Origin', '*');
         res.json(response.data);
     } catch (error) {
         console.error('Error fetching menu:', error.message);
@@ -67,7 +67,6 @@ app.get('/menu', async (req, res) => {
         } else if (error.code === 'ECONNABORTED') {
             console.error('Request timed out');
         }
-        res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(500).json({ 
             error: 'Failed to fetch menu',
             details: error.message,
@@ -110,8 +109,18 @@ app.post('/submit-order', async (req, res) => {
         );
 
         console.log('Apps Script response:', response.data);
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.json(response.data);
+
+        // Validate Apps Script response
+        if (!response.data || typeof response.data !== 'object') {
+            throw new Error('Invalid response from Apps Script');
+        }
+
+        // Ensure response matches expected format
+        if (response.data.status === 'success') {
+            res.json({ status: 'success', message: 'Order submitted successfully' });
+        } else {
+            throw new Error(response.data.message || 'Unknown error from Apps Script');
+        }
     } catch (error) {
         console.error('Error submitting order:', error.message);
         if (error.response) {
@@ -120,10 +129,9 @@ app.post('/submit-order', async (req, res) => {
         } else if (error.code === 'ECONNABORTED') {
             console.error('Request timed out');
         }
-        res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(500).json({ 
-            error: 'Failed to submit order',
-            details: error.message,
+            status: 'error',
+            message: error.message || 'Failed to submit order',
             timestamp: new Date().toISOString()
         });
     }
