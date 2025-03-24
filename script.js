@@ -10,7 +10,7 @@ let total = 0;
 // API_URL: ऑर्डर भेजने के लिए
 // MENU_URL: मेनू आइटम्स लाने के लिए
 // इन्हें बदलने से वेबसाइट काम नहीं करेगी
-const API_URL = "https://rai-guest-house-proxy-kkzhkqxan-raiguesthouses-projects.vercel.app/submit-order";
+const API_URL = "https://raiguesthouse-orujgkxvc-raiguesthouses-projects-f2380489.vercel.app/submit-order";
 const MENU_URL = "https://rai-guest-house-proxy-kkzhkqxan-raiguesthouses-projects.vercel.app/menu";
 
 // showInitialWarning फंक्शन
