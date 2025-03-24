@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rai Guest House</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .menu-item {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-6">Rai Guest House Restaurant Menu</h1>
+        
+        <!-- Language toggle could be added here if needed -->
+        
+        <!-- Menu Items -->
+        <div id="menu-items" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+        <!-- Cart Section -->
+        <h2 class="text-2xl font-semibold mt-8 mb-4">Cart / कार्ट</h2>
+        <ul id="cart-items" class="mb-4"></ul>
+        <p class="text-lg font-semibold">Total / कुल: ₹<span id="cart-total">0</span></p>
+
+        <!-- Order Form -->
+        <div class="mt-6">
+            <label for="room-number" class="block text-lg font-medium mb-2">Room Number / रूम नंबर:</label>
+            <input type="text" id="room-number" placeholder="Enter your room number / अपना रूम नंबर डालें" class="border p-2 rounded w-full mb-4" required>
+
+            <label for="mobile-number" class="block text-lg font-medium mb-2">Mobile Number / मोबाइल नंबर:</label>
+            <input type="tel" id="mobile-number" placeholder="Enter your mobile number / अपना मोबाइल नंबर डालें" pattern="[0-9]{10}" class="border p-2 rounded w-full mb-4" required>
+
+            <div class="warning-note bg-yellow-100 p-4 rounded border border-yellow-200 my-4">
+                <strong class="text-yellow-800">⚠️ Important Notice / जरूरी सूचना:</strong>
+                <ul class="list-disc ml-4 mt-2">
+                    <li>Enter the SAME mobile number you provided during check-in<br>
+                        वही मोबाइल नंबर डालें जो आपने check-in के समय दिया था</li>
+                    <li>Select your correct room number<br>
+                        सही रूम नंबर चुनें</li>
+                </ul>
+            </div>
+
+            <div class="terms-agreement mb-4">
+                <input type="checkbox" id="terms-checkbox" class="mr-2" required>
+                <label for="terms-checkbox">
+                    I confirm that I have entered the correct room number and check-in mobile number<br>
+                    मैं पुष्टि करता/करती हूं कि मैंने सही रूम नंबर और check-in वाला मोबाइल नंबर डाला है
+                </label>
+            </div>
+            <button id="submit-order" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
+                Place Order / ऑर्डर करें
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
