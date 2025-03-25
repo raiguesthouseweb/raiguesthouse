@@ -28,6 +28,7 @@
             align-items: center;
             box-shadow: 0 0 15px #FFD700;
             animation: glow 1.5s ease-in-out infinite alternate;
+            transition: opacity 0.3s ease; /* Add this line */
         }
         
         @keyframes glow {
@@ -45,12 +46,118 @@
             font-weight: bold;
             text-shadow: 0 0 10px #FFD700;
         }
+        
+        /* Add these new styles */
+        .title-container {
+            background: linear-gradient(45deg, #800000, #A52A2A);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid #FFD700;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .title-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .main-title-top {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #FFD700;
+            text-align: center;
+            margin-bottom: -0.5rem;
+            text-shadow: 0 0 15px #FFD700;
+            animation: glowingTitle 3s ease-in-out infinite;
+        }
+
+        .main-title-bottom {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #FFD700;
+            text-align: center;
+            text-shadow: 0 0 12px #FFD700;
+            animation: glowingTitle 3s ease-in-out infinite;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #FFD700;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            text-shadow: 0 0 10px #FFD700;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes glowingTitle {
+            0%, 100% {
+                filter: drop-shadow(0 0 8px #FFD700);
+            }
+            50% {
+                filter: drop-shadow(0 0 15px #FFD700);
+            }
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
     <div class="container mx-auto p-4">
-        <h1 class="text-3xl font-bold text-center mb-6">Rai Guest House Restaurant Menu</h1>
-        
+        <!-- Replace the old h1 with this new structure -->
+        <!-- Replace the title section -->
+        <style>
+            /* Update the main-title style to match the floating cart */
+            .main-title {
+                font-family: 'Times New Roman', serif;
+                font-size: 2.8rem;
+                font-weight: bold;
+                color: #FFD700;  /* Changed to gold color */
+                text-align: center;
+                letter-spacing: 3px;
+                text-shadow: 0 0 10px #FFD700;  /* Added gold text shadow */
+                margin-bottom: 0.5rem;
+                line-height: 1.2;
+                position: relative;
+                z-index: 1;
+                animation: glow 1.5s ease-in-out infinite alternate;  /* Same animation as floating cart */
+            }
+            
+            /* Keep the flare effect but adjust it to work with the gold color */
+            .main-title::before {
+                content: attr(data-text);
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                color: transparent;
+                -webkit-text-stroke: 1px #FFD700;
+                animation: flare 4s linear infinite;
+            }
+        </style>
+
+        <!-- The title section remains the same -->
+        <div class="title-container">
+            <h1 class="main-title" data-text="RAI GUEST HOUSE">RAI GUEST HOUSE</h1>
+            <p class="subtitle">Restaurant Menu</p>
+        </div>
+
         <!-- Menu Items -->
         <div id="menu-items" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 
@@ -102,7 +209,207 @@
     <div class="floating-cart" onclick="document.getElementById('cart-items').scrollIntoView({behavior: 'smooth'})">
         <span class="total">₹<span id="floating-total">0</span></span>
     </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-[#800000] text-[#FFD700] py-4 mt-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg font-bold mb-2">Contact Us</h3>
+                    <p>📞 +91 9876543210</p>
+                    <p>📧 info@raiguesthouse.com</p>
+                    <p>📍 Bodhgaya, Bihar</p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-bold mb-2">Quick Links</h3>
+                    <p>Room Booking</p>
+                    <p>Restaurant Menu</p>
+                    <p>Tourist Guide</p>
+                </div>
+                
+                <!-- Business Hours -->
+                <div>
+                    <h3 class="text-lg font-bold mb-2">Restaurant Hours</h3>
+                    <p>Monday - Sunday</p>
+                    <p>10:00 AM - 11:00 PM</p>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="text-center mt-6 pt-4 border-t border-[#FFD700]">
+                <p>© 2024 Rai Guest House. All rights reserved.</p>
+                <p class="text-sm mt-1">Developed & Maintained by <span class="font-semibold">Aakash Rai</span></p>
+            </div>
+        </div>
+    </footer>
     
     <script src="script.js"></script>
 </body>
 </html>
+
+<style>
+    .restaurant-hours {
+        font-family: 'Times New Roman', Times, serif;
+        color: #FFD700;
+        text-align: center;
+        font-size: 1.2rem;
+        margin: 1rem 0;
+        text-shadow: 0 0 8px #FFD700;
+    }
+
+    .hours-text {
+        font-family: 'Times New Roman', Times, serif;
+        color: #FFD700;
+        font-size: 1.1rem;
+    }
+    .font-['Times_New_Roman'] {
+        font-family: 'Times New Roman', Times, serif;
+    }
+</style>
+
+<!-- Replace the Restaurant Hours section in footer -->
+<div>
+    <h3 class="restaurant-hours">Restaurant Hours</h3>
+    <p class="hours-text text-center">11:00 AM - 11:00 PM</p>
+    <p class="hours-text text-center">Monday - Sunday</p>
+</div>
+
+<style>
+    .marble-title {
+        font-size: 4.5rem;
+        font-weight: 900;
+        text-align: center;
+        background-image: linear-gradient(45deg, #1e3c72, #2a5298);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        position: relative;
+        line-height: 1.2;
+        font-family: 'Times New Roman', serif;
+        text-transform: uppercase;
+    }
+
+    .marble-title::before {
+        content: attr(data-text);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-image: linear-gradient(45deg, 
+            rgba(255, 215, 0, 0.8),
+            rgba(255, 215, 0, 0.3),
+            rgba(255, 215, 0, 0.8)
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        z-index: 1;
+    }
+
+    .marble-subtitle {
+        font-size: 3.5rem;
+        margin-top: -1rem;
+    }
+
+    .title-container {
+        background: transparent;
+        padding: 1.8rem;
+        border-radius: 12px;
+        border: 2px solid #FFD700;
+        margin-bottom: 2rem;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .title-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #FFD700, transparent);
+        animation: shimmer 3s infinite;
+    }
+    
+    .title-container::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #FFD700, transparent);
+        animation: shimmer 3s infinite reverse;
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+    
+    .main-title {
+        font-family: 'Times New Roman', serif;
+        font-size: 2.8rem;
+        font-weight: bold;
+        color: white;
+        text-align: center;
+        letter-spacing: 3px;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .main-title::before {
+        content: attr(data-text);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        color: transparent;
+        -webkit-text-stroke: 1px #FFD700;
+        animation: flare 4s linear infinite;
+    }
+    
+    @keyframes flare {
+        0% {
+            filter: drop-shadow(0 0 0 #FFD700);
+        }
+        25% {
+            filter: drop-shadow(0 0 5px #FFD700);
+        }
+        50% {
+            filter: drop-shadow(0 0 10px #FFD700);
+        }
+        75% {
+            filter: drop-shadow(0 0 5px #FFD700);
+        }
+        100% {
+            filter: drop-shadow(0 0 0 #FFD700);
+        }
+    }
+    .subtitle {
+        font-family: 'Times New Roman', serif;
+        font-size: 1.3rem;
+        color: #FFD700;
+        text-align: center;
+        margin-top: 0.5rem;
+        letter-spacing: 1px;
+        text-shadow: 0 0 8px #FFD700;
+        animation: breathe 4s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+</style>
