@@ -1,4 +1,22 @@
-// कार्ट एक खाली एरे है जिसमें सभी चुने गए आइटम्स स्टोर होंगे
+// Add this at the start of your script file
+window.addEventListener('scroll', function() {
+    const footer = document.querySelector('footer');
+    const floatingCart = document.querySelector('.floating-cart');
+    
+    if (footer && floatingCart) {
+        const footerTop = footer.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
+        
+        // Hide floating cart when footer is visible
+        if (footerTop < windowHeight) {
+            floatingCart.style.opacity = '0';
+            floatingCart.style.pointerEvents = 'none';
+        } else {
+            floatingCart.style.opacity = '1';
+            floatingCart.style.pointerEvents = 'auto';
+        }
+    }
+});// कार्ट एक खाली एरे है जिसमें सभी चुने गए आइटम्स स्टोर होंगे
 // इसे खाली करने से सारे सिलेक्ठेड आइटम्स गायब हो जाएंगे
 // Initialize empty cart array to store selected items
 // Each item will have: name, price, and quantity
@@ -9,7 +27,7 @@ let cart = [];
 let total = 0;
 
 // API endpoints for order submission and menu fetching
-const API_URL = "https://raiguesthouse-orujgkxvc-raiguesthouses-projects-f2380489.vercel.app/submit-order";
+const API_URL = "https://rai-guest-house-proxy-kkzhkqxan-raiguesthouses-projects.vercel.app/submit-order";
 const MENU_URL = "https://rai-guest-house-proxy-kkzhkqxan-raiguesthouses-projects.vercel.app/menu";
 
 // showInitialWarning फंक्शन
