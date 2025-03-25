@@ -1,18 +1,42 @@
-<!-- Remove the floating-total div and its styles -->
-<!-- Keep the original file structure -->
+<!-- यह HTML फाइल RAI GUEST HOUSE के रेस्टोरेंट मेनू के लिए है -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rai Guest House</title>
+    <!-- टेलविंड CSS फ्रेमवर्क और फॉन्ट अवसम आइकॉन्स का उपयोग -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* मेनू आइटम के लिए स्टाइल */
         .menu-item {
             margin: 10px 0;
         }
         
+        /* Places to Visit बटन का स्टाइल - बटन स्टाइल को संशोधित किया गया है */
+        .places-button {
+            background: linear-gradient(45deg, #800000, #A52A2A);
+            color: #FFD700;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            margin: 0 auto 20px auto;
+            display: block;
+            max-width: 300px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .places-button:hover {
+            background: linear-gradient(45deg, #A52A2A, #800000);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            transform: translateY(-2px);
+        }
+        
+        /* फ्लोटिंग कार्ट बटन - स्क्रीन के निचले दाहिने कोने में दिखता है */
         .floating-cart {
             position: fixed;
             bottom: 20px;
@@ -28,9 +52,10 @@
             align-items: center;
             box-shadow: 0 0 15px #FFD700;
             animation: glow 1.5s ease-in-out infinite alternate;
-            transition: opacity 0.3s ease; /* Add this line */
+            transition: opacity 0.3s ease; /* यह लाइन फेड इन/आउट इफेक्ट के लिए है */
         }
         
+        /* चमकने का एनिमेशन - सोने के रंग की चमक बनाता है */
         @keyframes glow {
             from {
                 box-shadow: 0 0 10px #FFD700;
@@ -40,6 +65,7 @@
             }
         }
         
+        /* फ्लोटिंग कार्ट में टोटल प्राइस का स्टाइल */
         .floating-cart .total {
             color: #FFD700;
             font-size: 24px;
@@ -47,18 +73,18 @@
             text-shadow: 0 0 10px #FFD700;
         }
         
-        /* Add these new styles */
+        /* शीर्षक कंटेनर का स्टाइल - मैरून बैकग्राउंड के साथ */
         .title-container {
             background: linear-gradient(45deg, #800000, #A52A2A);
             padding: 1.5rem;
             border-radius: 15px;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            border: 2px solid #FFD700;
+            /* बॉक्स-शैडो और बॉर्डर हटा दिए गए हैं */
             position: relative;
             overflow: hidden;
         }
 
+        /* शीर्षक रैपर का स्टाइल */
         .title-wrapper {
             display: flex;
             flex-direction: column;
@@ -66,6 +92,7 @@
             margin-bottom: 2rem;
         }
 
+        /* मुख्य शीर्षक का ऊपरी भाग */
         .main-title-top {
             font-size: 4rem;
             font-weight: 900;
@@ -76,6 +103,7 @@
             animation: glowingTitle 3s ease-in-out infinite;
         }
 
+        /* मुख्य शीर्षक का निचला भाग */
         .main-title-bottom {
             font-size: 3rem;
             font-weight: 800;
@@ -85,6 +113,7 @@
             animation: glowingTitle 3s ease-in-out infinite;
         }
 
+        /* उपशीर्षक (सबटाइटल) का स्टाइल */
         .subtitle {
             font-size: 1.5rem;
             color: #FFD700;
@@ -95,6 +124,7 @@
             animation: breathe 4s ease-in-out infinite;
         }
 
+        /* शीर्षक के लिए चमकने का एनिमेशन */
         @keyframes glowingTitle {
             0%, 100% {
                 filter: drop-shadow(0 0 8px #FFD700);
@@ -104,6 +134,7 @@
             }
         }
 
+        /* सांस लेने जैसा एनिमेशन - थोड़ा बड़ा और छोटा होता है */
         @keyframes breathe {
             0%, 100% {
                 transform: scale(1);
@@ -114,78 +145,99 @@
                 opacity: 0.8;
             }
         }
+        
+        /* मुख्य शीर्षक का स्टाइल - फ्लोटिंग कार्ट के साथ मैच करता है */
+        .main-title {
+            font-family: 'Times New Roman', serif;
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #FFD700;  /* सोने के रंग में बदला गया */
+            text-align: center;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px #FFD700;  /* सोने के रंग की टेक्स्ट शैडो जोड़ी गई */
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+            position: relative;
+            z-index: 1;
+            animation: glow 1.5s ease-in-out infinite alternate;  /* फ्लोटिंग कार्ट के समान एनिमेशन */
+        }
+        
+        /* फ्लेयर इफेक्ट को रखें लेकिन सोने के रंग के साथ काम करने के लिए समायोजित करें */
+        .main-title::before {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            color: transparent;
+            -webkit-text-stroke: 1px #FFD700;
+            animation: flare 4s linear infinite;
+        }
+        
+        /* फ्लेयर एनिमेशन */
+        @keyframes flare {
+            0% {
+                filter: drop-shadow(0 0 0 #FFD700);
+            }
+            25% {
+                filter: drop-shadow(0 0 5px #FFD700);
+            }
+            50% {
+                filter: drop-shadow(0 0 10px #FFD700);
+            }
+            75% {
+                filter: drop-shadow(0 0 5px #FFD700);
+            }
+            100% {
+                filter: drop-shadow(0 0 0 #FFD700);
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
     <div class="container mx-auto p-4">
-        <!-- Replace the old h1 with this new structure -->
-        <!-- Replace the title section -->
-        <style>
-            /* Update the main-title style to match the floating cart */
-            .main-title {
-                font-family: 'Times New Roman', serif;
-                font-size: 2.8rem;
-                font-weight: bold;
-                color: #FFD700;  /* Changed to gold color */
-                text-align: center;
-                letter-spacing: 3px;
-                text-shadow: 0 0 10px #FFD700;  /* Added gold text shadow */
-                margin-bottom: 0.5rem;
-                line-height: 1.2;
-                position: relative;
-                z-index: 1;
-                animation: glow 1.5s ease-in-out infinite alternate;  /* Same animation as floating cart */
-            }
-            
-            /* Keep the flare effect but adjust it to work with the gold color */
-            .main-title::before {
-                content: attr(data-text);
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                z-index: -1;
-                color: transparent;
-                -webkit-text-stroke: 1px #FFD700;
-                animation: flare 4s linear infinite;
-            }
-        </style>
-
-        <!-- The title section remains the same -->
+        <!-- Places to Visit In Ujjain बटन - शीर्षक से पहले -->
+        <a href="Places To VIsit In Ujjain.html" class="places-button mt-4 mb-6">
+            <i class="fas fa-map-marked-alt mr-2"></i> Places to Visit In Ujjain
+        </a>
+        
+        <!-- मुख्य शीर्षक अनुभाग - RAI GUEST HOUSE का नाम और रेस्टोरेंट मेनू सबटाइटल -->
         <div class="title-container">
             <h1 class="main-title" data-text="RAI GUEST HOUSE">RAI GUEST HOUSE</h1>
             <p class="subtitle">Restaurant Menu</p>
         </div>
 
-        <!-- Menu Items -->
+        <!-- मेनू आइटम्स - जावास्क्रिप्ट द्वारा भरे जाएंगे -->
         <div id="menu-items" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 
-        <!-- Cart Section -->
+        <!-- कार्ट अनुभाग - चुने गए आइटम्स यहां दिखेंगे -->
         <h2 class="text-2xl font-semibold mt-8 mb-4">Your Cart</h2>
         <ul id="cart-items" class="mb-4"></ul>
         <p class="text-lg font-semibold">Total: ₹<span id="cart-total">0</span></p>
 
-        <!-- Order Form -->
+        <!-- ऑर्डर फॉर्म - ग्राहक की जानकारी के लिए -->
         <div class="mt-6">
+            <!-- रूम नंबर इनपुट फील्ड -->
             <label for="room-number" class="block text-lg font-medium mb-2">Room Number:</label>
             <input type="text" id="room-number" 
                    placeholder="Enter your room number" 
-                   class="border p-2 rounded w-full mb-4 bg-transparent text-white placeholder-gray-400" 
-                   style="border-color: rgba(255, 255, 255, 0.3);"
+                   class="border p-2 rounded w-full mb-4" 
                    required>
 
+            <!-- मोबाइल नंबर इनपुट फील्ड -->
             <label for="mobile-number" class="block text-lg font-medium mb-2">Mobile Number:</label>
             <input type="tel" id="mobile-number" 
                    placeholder="Enter your mobile number" 
                    pattern="[0-9]{10}" 
-                   class="border p-2 rounded w-full mb-4 bg-transparent text-white placeholder-gray-400" 
-                   style="border-color: rgba(255, 255, 255, 0.3);"
+                   class="border p-2 rounded w-full mb-4" 
                    required>
 
-            <div class="warning-note p-4 rounded border border-yellow-400 my-4" style="background: rgba(0, 0, 0, 0.5);">
-                <strong class="text-yellow-400">⚠️ Important Notice / जरूरी सूचना:</strong>
-                <ul class="list-disc ml-4 mt-2 text-yellow-100">
+            <!-- महत्वपूर्ण सूचना बॉक्स - हिंदी और अंग्रेजी में -->
+            <div class="warning-note p-4 rounded border border-yellow-400 my-4 bg-yellow-50">
+                <strong class="text-yellow-700">⚠️ Important Notice / जरूरी सूचना:</strong>
+                <ul class="list-disc ml-4 mt-2 text-yellow-700">
                     <li>Enter the SAME mobile number you provided during check-in<br>
                         वही मोबाइल नंबर डालें जो आपने check-in के समय दिया था</li>
                     <li>Select your correct room number<br>
@@ -193,6 +245,7 @@
                 </ul>
             </div>
 
+            <!-- नियम और शर्तें स्वीकार करने का चेकबॉक्स -->
             <div class="terms-agreement mb-4">
                 <input type="checkbox" id="terms-checkbox" class="mr-2" required>
                 <label for="terms-checkbox">
@@ -200,200 +253,48 @@
                     मैं पुष्टि करता/करती हूं कि मैंने सही रूम नंबर और check-in वाला मोबाइल नंबर डाला है
                 </label>
             </div>
+            <!-- ऑर्डर प्लेस करने का बटन -->
             <button id="submit-order" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
                 Place Order
             </button>
         </div>
     </div>
     
+    <!-- फ्लोटिंग कार्ट बटन - स्क्रीन के निचले दाहिने कोने में दिखता है -->
     <div class="floating-cart" onclick="document.getElementById('cart-items').scrollIntoView({behavior: 'smooth'})">
         <span class="total">₹<span id="floating-total">0</span></span>
     </div>
 
-    <!-- Footer Section -->
+    <!-- फुटर अनुभाग - संपर्क जानकारी और कॉपीराइट -->
     <footer class="bg-[#800000] text-[#FFD700] py-4 mt-8">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
-                <!-- Contact Info -->
+                <!-- संपर्क जानकारी -->
                 <div>
                     <h3 class="text-lg font-bold mb-2">Contact Us</h3>
-                    <p>📞 +91 9111191152, 9826913203</p>
+                    <p>📞 +91 9111191152</p>
                     <p>📧 info@raiguesthouse.com</p>
-                    <p>📍 Ujjain, Madhya Pradesh</p>
+                    <p>📍 Nijatpura, Near Tiwari Nursing Home Ujjain</p>
+                    <p>    Madhya Pradesh</p>
                 </div>
-                            
-            <!-- Copyright -->
-            <div class="text-center mt-6 pt-4 border-t border-[#FFD700]">
-                <p>© 2025 Rai Guest House. All rights reserved.</p>
-                <p class="text-sm mt-1">Developed & Maintained by <span class="font-semibold"><strong>Aakash Rai</strong></span></p>
+                
+                <!-- रेस्टोरेंट के समय का अनुभाग -->
+                <div>
+                    <h3 class="restaurant-hours">Restaurant Hours</h3>
+                    <p class="hours-text text-center">11:00 AM - 11:00 PM</p>
+                    <p class="hours-text text-center">Monday - Sunday</p>
+                </div>
+                
+                <!-- कॉपीराइट जानकारी -->
+                <div class="text-center mt-6 pt-4 border-t border-[#FFD700]">
+                    <p>© 2025 Rai Guest House. All rights reserved.</p>
+                    <p class="text-sm mt-1">Developed & Maintained by <span class="font-semibold"><strong>Aakash Rai</strong></span></p>
+                </div>
             </div>
         </div>
     </footer>
     
+    <!-- जावास्क्रिप्ट फाइल का लिंक -->
     <script src="script.js"></script>
 </body>
 </html>
-
-<style>
-    .restaurant-hours {
-        font-family: 'Times New Roman', Times, serif;
-        color: #FFD700;
-        text-align: center;
-        font-size: 1.2rem;
-        margin: 1rem 0;
-        text-shadow: 0 0 8px #FFD700;
-    }
-
-    .hours-text {
-        font-family: 'Times New Roman', Times, serif;
-        color: #FFD700;
-        font-size: 1.1rem;
-    }
-    .font-['Times_New_Roman'] {
-        font-family: 'Times New Roman', Times, serif;
-    }
-</style>
-
-<!-- Replace the Restaurant Hours section in footer -->
-<div>
-    <h3 class="restaurant-hours">Restaurant Hours</h3>
-    <p class="hours-text text-center">11:00 AM - 11:00 PM</p>
-    <p class="hours-text text-center">Monday - Sunday</p>
-</div>
-
-<style>
-    .marble-title {
-        font-size: 4.5rem;
-        font-weight: 900;
-        text-align: center;
-        background-image: linear-gradient(45deg, #1e3c72, #2a5298);
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-        position: relative;
-        line-height: 1.2;
-        font-family: 'Times New Roman', serif;
-        text-transform: uppercase;
-    }
-
-    .marble-title::before {
-        content: attr(data-text);
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-image: linear-gradient(45deg, 
-            rgba(255, 215, 0, 0.8),
-            rgba(255, 215, 0, 0.3),
-            rgba(255, 215, 0, 0.8)
-        );
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        z-index: 1;
-    }
-
-    .marble-subtitle {
-        font-size: 3.5rem;
-        margin-top: -1rem;
-    }
-
-    .title-container {
-        background: transparent;
-        padding: 1.8rem;
-        border-radius: 12px;
-        border: 2px solid #FFD700;
-        margin-bottom: 2rem;
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .title-container::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, #FFD700, transparent);
-        animation: shimmer 3s infinite;
-    }
-    
-    .title-container::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, #FFD700, transparent);
-        animation: shimmer 3s infinite reverse;
-    }
-    
-    @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-    }
-    
-    .main-title {
-        font-family: 'Times New Roman', serif;
-        font-size: 2.8rem;
-        font-weight: bold;
-        color: white;
-        text-align: center;
-        letter-spacing: 3px;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        margin-bottom: 0.5rem;
-        line-height: 1.2;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .main-title::before {
-        content: attr(data-text);
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-        color: transparent;
-        -webkit-text-stroke: 1px #FFD700;
-        animation: flare 4s linear infinite;
-    }
-    
-    @keyframes flare {
-        0% {
-            filter: drop-shadow(0 0 0 #FFD700);
-        }
-        25% {
-            filter: drop-shadow(0 0 5px #FFD700);
-        }
-        50% {
-            filter: drop-shadow(0 0 10px #FFD700);
-        }
-        75% {
-            filter: drop-shadow(0 0 5px #FFD700);
-        }
-        100% {
-            filter: drop-shadow(0 0 0 #FFD700);
-        }
-    }
-    .subtitle {
-        font-family: 'Times New Roman', serif;
-        font-size: 1.3rem;
-        color: #FFD700;
-        text-align: center;
-        margin-top: 0.5rem;
-        letter-spacing: 1px;
-        text-shadow: 0 0 8px #FFD700;
-        animation: breathe 4s ease-in-out infinite;
-    }
-
-    @keyframes breathe {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
-    }
-</style>
