@@ -7,9 +7,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rai Guest House</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .menu-item {
             margin: 10px 0;
+        }
+        
+        .floating-cart {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            cursor: pointer;
+            z-index: 1000;
+            width: 75px;
+            height: 75px;
+            border: 3px solid #FFD700;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px #FFD700;
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 10px #FFD700;
+            }
+            to {
+                box-shadow: 0 0 20px #FFD700, 0 0 30px #FFD700;
+            }
+        }
+        
+        .floating-cart .total {
+            color: #FFD700;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #FFD700;
         }
     </style>
 </head>
@@ -21,22 +55,22 @@
         <div id="menu-items" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 
         <!-- Cart Section -->
-        <h2 class="text-2xl font-semibold mt-8 mb-4">Cart / कार्ट</h2>
+        <h2 class="text-2xl font-semibold mt-8 mb-4">Your Cart</h2>
         <ul id="cart-items" class="mb-4"></ul>
-        <p class="text-lg font-semibold">Total / कुल: ₹<span id="cart-total">0</span></p>
+        <p class="text-lg font-semibold">Total: ₹<span id="cart-total">0</span></p>
 
         <!-- Order Form -->
         <div class="mt-6">
-            <label for="room-number" class="block text-lg font-medium mb-2">Room Number / रूम नंबर:</label>
+            <label for="room-number" class="block text-lg font-medium mb-2">Room Number:</label>
             <input type="text" id="room-number" 
-                   placeholder="Enter your room number / अपना रूम नंबर डालें" 
+                   placeholder="Enter your room number" 
                    class="border p-2 rounded w-full mb-4 bg-transparent text-white placeholder-gray-400" 
                    style="border-color: rgba(255, 255, 255, 0.3);"
                    required>
 
-            <label for="mobile-number" class="block text-lg font-medium mb-2">Mobile Number / मोबाइल नंबर:</label>
+            <label for="mobile-number" class="block text-lg font-medium mb-2">Mobile Number:</label>
             <input type="tel" id="mobile-number" 
-                   placeholder="Enter your mobile number / अपना मोबाइल नंबर डालें" 
+                   placeholder="Enter your mobile number" 
                    pattern="[0-9]{10}" 
                    class="border p-2 rounded w-full mb-4 bg-transparent text-white placeholder-gray-400" 
                    style="border-color: rgba(255, 255, 255, 0.3);"
@@ -60,10 +94,15 @@
                 </label>
             </div>
             <button id="submit-order" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
-                Place Order / ऑर्डर करें
+                Place Order
             </button>
         </div>
     </div>
+    
+    <div class="floating-cart" onclick="document.getElementById('cart-items').scrollIntoView({behavior: 'smooth'})">
+        <span class="total">₹<span id="floating-total">0</span></span>
+    </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
