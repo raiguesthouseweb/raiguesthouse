@@ -9,7 +9,7 @@ let cart = [];
 let total = 0;
 
 // API endpoints for order submission and menu fetching
-const API_URL = "https://raiguesthouse-orujgkxvc-raiguesthouses-projects-f2380489.vercel.app/submit-order";
+const API_URL = "https://rai-guest-house-proxy-kkzhkqxan-raiguesthouses-projects.vercel.app/submit-order";
 const MENU_URL = "https://rai-guest-house-proxy-kkzhkqxan-raiguesthouses-projects.vercel.app/menu";
 
 // showInitialWarning फंक्शन
@@ -140,8 +140,6 @@ function displayMenu(menuItems) {
             }
             
             #menu-items {
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(10px);
                 border-radius: 16px;
                 padding: 20px;
                 margin-top: 20px;
@@ -155,6 +153,8 @@ function displayMenu(menuItems) {
     menuDiv.style.maxWidth = '375px';
     menuDiv.style.margin = '20px auto';
     menuDiv.style.padding = '20px 10px';
+    menuDiv.style.background = 'none'; // Remove dark background
+    menuDiv.style.backdropFilter = 'none'; // Remove blur effect
 
     const groupedItems = {};
     menuItems.forEach(item => {
@@ -330,7 +330,7 @@ function updateCart() {
     cartDiv.innerHTML = '';
     
     if (cart.length === 0) {
-        cartDiv.innerHTML = '<div class="text-sm text-gray-500 text-center p-3">Your cart is empty</div>';
+        cartDiv.innerHTML = '<div class="text-base text-white text-center p-3">Your cart is empty</div>';
     } else {
         cart.forEach(item => {
             const itemDiv = document.createElement('div');
@@ -338,14 +338,14 @@ function updateCart() {
             itemDiv.innerHTML = `
                 <div class="flex justify-between items-center">
                     <div class="flex-1">
-                        <span class="text-sm font-medium text-gray-800">${item.name}</span>
+                        <span class="text-base font-bold text-white">${item.name}</span>
                         <div class="flex items-center mt-1">
-                            <span class="text-xs text-gray-500">Qty: ${item.quantity}</span>
-                            <span class="text-sm font-medium text-gray-800 ml-2">₹${item.price * item.quantity}</span>
+                            <span class="text-sm text-white">Qty: ${item.quantity}</span>
+                            <span class="text-base font-bold text-white ml-2">₹${item.price * item.quantity}</span>
                         </div>
                     </div>
                     <button onclick="removeFromCart('${item.name}', ${item.price})" 
-                            class="text-red-500 text-xs px-2 py-1 hover:bg-red-50 rounded">
+                            class="text-red-500 text-sm px-2 py-1 hover:bg-red-50 rounded">
                         Remove
                     </button>
                 </div>
@@ -354,10 +354,25 @@ function updateCart() {
         });
     }
 
+    // Update both total displays with dynamic color
     const totalDiv = document.getElementById('cart-total');
+    const floatingTotal = document.getElementById('floating-total');
+    const floatingTotalParent = floatingTotal.parentElement;
+    
     if (totalDiv) {
-        totalDiv.className = 'text-base font-semibold text-gray-800 p-3 border-t border-gray-200 bg-gray-50';
-        totalDiv.innerHTML = `Total Amount: ₹${total}`;
+        totalDiv.innerHTML = total;
+    }
+    if (floatingTotal) {
+        floatingTotal.innerHTML = total;
+        // Change color based on background
+        const computedStyle = window.getComputedStyle(document.body);
+        const backgroundColor = computedStyle.backgroundColor;
+        
+        if (backgroundColor.includes('rgba(255, 215, 0') || backgroundColor.includes('#FFD700')) {
+            floatingTotalParent.style.color = '#800000'; // Dark maroon text for yellow background
+        } else {
+            floatingTotalParent.style.color = '#FFD700'; // Yellow text for dark background
+        }
     }
 }
 
