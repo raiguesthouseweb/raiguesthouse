@@ -689,4 +689,42 @@ document.addEventListener('DOMContentLoaded', () => {
     // थोड़ा डिले देना ताकि सभी एलिमेंट्स लोड हो जाएं
     // अगर बटन तुरंत नहीं दिखता है तो इस टाइम को बढ़ा सकते हैं (जैसे 2000 या 3000)
     setTimeout(styleVisitButton, 1000);
+    
+    // Style the input fields for room number and mobile number
+    const roomNumberInput = document.getElementById('room-number');
+    const mobileNumberInput = document.getElementById('mobile-number');
+    
+    if (roomNumberInput) {
+        roomNumberInput.style.backgroundColor = '#FFFBEB'; // Light golden background
+        roomNumberInput.style.borderColor = '#FFD700'; // Golden border
+        roomNumberInput.style.color = '#800000'; // Maroon text
+        roomNumberInput.style.boxShadow = '0 0 5px rgba(255, 215, 0, 0.3)'; // Subtle golden glow
+    }
+    
+    if (mobileNumberInput) {
+        mobileNumberInput.style.backgroundColor = '#FFFBEB'; // Light golden background
+        mobileNumberInput.style.borderColor = '#FFD700'; // Golden border
+        mobileNumberInput.style.color = '#800000'; // Maroon text
+        mobileNumberInput.style.boxShadow = '0 0 5px rgba(255, 215, 0, 0.3)'; // Subtle golden glow
+    }
+    
+    // Add focus effect for better user experience
+    const styleInputs = (input) => {
+        if (!input) return;
+        
+        input.addEventListener('focus', () => {
+            input.style.backgroundColor = '#FFF8E1'; // Slightly different color on focus
+            input.style.boxShadow = '0 0 8px rgba(255, 215, 0, 0.5)'; // Enhanced glow on focus
+            input.style.borderColor = '#DAA520'; // Darker gold on focus
+        });
+        
+        input.addEventListener('blur', () => {
+            input.style.backgroundColor = '#FFFBEB'; // Back to original color
+            input.style.boxShadow = '0 0 5px rgba(255, 215, 0, 0.3)'; // Back to original shadow
+            input.style.borderColor = '#FFD700'; // Back to original border
+        });
+    };
+    
+    styleInputs(roomNumberInput);
+    styleInputs(mobileNumberInput);
 });
