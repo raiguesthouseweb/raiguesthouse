@@ -129,6 +129,60 @@ async function fetchMenu() {
         }
 
         displayMenu(menuItems);
+        
+        // Add form styling to make input fields more visible
+        if (!document.querySelector('#formFieldsStyle')) {
+            const formStyle = document.createElement('style');
+            formStyle.id = 'formFieldsStyle';
+            formStyle.textContent = `
+                #room-number, #mobile-number {
+                    background-color: white !important;
+                    color: black !important;
+                    font-weight: bold !important;
+                    font-size: 16px !important;
+                    border: 2px solid #FFD700 !important;
+                    padding: 10px !important;
+                    border-radius: 8px !important;
+                    width: 100% !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                #room-number::placeholder, #mobile-number::placeholder {
+                    color: #666 !important;
+                    opacity: 1 !important;
+                }
+                
+                label[for="room-number"], label[for="mobile-number"] {
+                    color: #FFD700 !important;
+                    font-size: 18px !important;
+                    font-weight: bold !important;
+                    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+                    margin-bottom: 5px !important;
+                    display: block !important;
+                }
+                
+                .warning-note {
+                    background-color: rgba(128, 0, 0, 0.7) !important;
+                    border: 2px solid #FFD700 !important;
+                }
+                
+                #terms-checkbox {
+                    width: 20px !important;
+                    height: 20px !important;
+                }
+                
+                label[for="terms-checkbox"] {
+                    color: #FFD700 !important;
+                    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+                }
+                
+                h2, p.text-lg.font-semibold {
+                    color: #FFD700 !important;
+                    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
+                }
+            `;
+            document.head.appendChild(formStyle);
+        }
     } catch (error) {
         console.error('Error fetching menu:', error);
         alert('Failed to load menu: ' + error.message);
