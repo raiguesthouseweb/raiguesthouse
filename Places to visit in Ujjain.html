@@ -16,6 +16,13 @@
             color: #FFD700;
             padding: 2rem 0;
             text-align: center;
+            position: relative;
+        }
+        
+        .home-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
         }
         
         .title {
@@ -72,6 +79,13 @@
 <body>
     <!-- हेडर सेक्शन -->
     <div class="header">
+        <!-- Add Home button in the top corner -->
+        <div class="home-button">
+            <a href="index.html" class="inline-block bg-[#800000] text-[#FFD700] px-4 py-2 rounded border-2 border-[#FFD700] hover:bg-[#A52A2A] transition-colors">
+                Home
+            </a>
+        </div>
+        
         <h1 class="title">RAI GUEST HOUSE</h1>
         <p class="subtitle">Places To Visit In Ujjain</p>
     </div>
@@ -92,14 +106,13 @@
         </div>
         
         <!-- महाकालेश्वर मंदिर -->
-<div class="section">
-    <h2 class="section-title">Mahakaleshwar Temple</h2>
-    <img src="https://drive.google.com/uc?id=1ojIaqB2FFxdjRmifoTLiGVdXsIail-Ml" alt="Mahakaleshwar Temple" class="place-image">
-    <p class="mb-4">
-        One of the twelve Jyotirlingas in India, the Mahakaleshwar Temple is dedicated to Lord Shiva. 
-        The temple is known for its Bhasma Aarti, a special ritual performed early in the morning.
-    </p>
-</div>
+        <div class="section">
+            <h2 class="section-title">Mahakaleshwar Temple</h2>
+            <img src="https://drive.google.com/file/d/1ojIaqB2FFxdjRmifoTLiGVdXsIail-Ml/view?usp=sharing" alt="Mahakaleshwar Temple" class="place-image">
+            <p class="mb-4">
+                One of the twelve Jyotirlingas in India, the Mahakaleshwar Temple is dedicated to Lord Shiva. 
+                The temple is known for its Bhasma Aarti, a special ritual performed early in the morning.
+            </p>
             <ul class="list-disc pl-5 space-y-2">
                 <li>Distance from Rai Guest House: 2 km</li>
                 <li>Timings: 4:00 AM to 11:00 PM</li>
@@ -174,11 +187,7 @@
                 We also provide maps and local insights to make your Ujjain experience memorable.
             </p>
             <p class="mb-2">📞 Contact our travel desk: +91 9111191152</p>
-            <div class="mt-4">
-                <a href="index.html" class="inline-block bg-[#800000] text-[#FFD700] px-6 py-2 rounded hover:bg-[#A52A2A] transition-colors">
-                    Back to Menu
-                </a>
-            </div>
+            <!-- Removed the Back to Menu button from here -->
         </div>
     </div>
     
