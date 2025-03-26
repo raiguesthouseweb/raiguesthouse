@@ -1,327 +1,202 @@
-<!-- यह HTML फाइल RAI GUEST HOUSE के रेस्टोरेंट मेनू के लिए है -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- वेबपेज की बेसिक सेटिंग्स -->
-    <meta charset="UTF-8"> <!-- करैक्टर एन्कॉडिंग UTF-8 सेट करें -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- मोबाइल डिवाइस के लिए रेस्पॉन्सिव व्यू -->
-    <title>Rai Guest House</title> <!-- वेबपेज का टाइटल -->
-    
-    <!-- टेलविंड CSS फ्रेमवर्क और फॉन्ट अवसम आइकॉन्स का उपयोग -->
-    <script src="https://cdn.tailwindcss.com"></script> <!-- टेलविंड CSS लोड करें -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <!-- फॉन्ट अवसम आइकॉन्स लोड करें -->
-    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rai Guest House</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* मेनू आइटम के लिए स्टाइल */
-        .menu-item {
-            margin: 10px 0; /* मेनू आइटम्स के बीच स्पेसिंग */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        /* Places to Visit बटन का स्टाइल */
+        body {
+            font-family: 'Lora', serif;
+            background: linear-gradient(135deg, #0A1A2F 0%, #1E3A5F 100%);
+            color: #F5E050;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Cinzel', serif;
+            color: #F5E050;
+        }
+        
+        .logo {
+            max-width: 200px;
+            margin: 0 auto;
+            display: block;
+        }
+        
         .places-button {
-            background: linear-gradient(45deg, #800000, #A52A2A); /* बटन का ग्रेडिएंट बैकग्राउंड (मरून से लाल-मरून) */
-            color: #FFD700; /* टेक्स्ट कलर (गोल्डन) */
-            padding: 10px 20px; /* बटन के अंदर का स्पेस */
-            border-radius: 8px; /* बटन के कोनों का गोलापन */
-            font-weight: bold; /* टेक्स्ट मोटा */
-            text-align: center; /* टेक्स्ट सेंटर में */
-            margin: 0 auto 20px auto; /* बटन को सेंटर में रखें */
-            display: block; /* बटन को ब्लॉक एलिमेंट बनाएं */
-            max-width: 300px; /* बटन की अधिकतम चौड़ाई */
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); /* बटन पर गोल्डन शैडो */
-            transition: all 0.3s ease; /* होवर इफेक्ट के लिए एनिमेशन */
-            text-decoration: none; /* अंडरलाइन हटाना */
+            background: linear-gradient(45deg, #0A1A2F, #F5E050);
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            margin: 0 auto 20px auto;
+            display: block;
+            max-width: 300px;
+            box-shadow: 0 0 10px rgba(245, 224, 80, 0.5);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'Lora', serif;
         }
         
-        /* बटन पर होवर इफेक्ट */
-        .places-button:hover {
-            background: linear-gradient(45deg, #A52A2A, #800000); /* ग्रेडिएंट रिवर्स करें */
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); /* शैडो बड़ी और ज्यादा चमकऀली */
-            transform: translateY(-2px); /* बटन थोड़ा ऊपर उठेगा */
+        .menu-section, .cart-section {
+            margin-bottom: 30px;
         }
         
-        /* फ्लोटिंग कार्ट बटन का स्टाइल */
-        .floating-cart {
-            position: fixed; /* स्क्रीन पर फिक्स्ड पोजीशन */
-            bottom: 20px; /* नीचे से 20px ऊपर */
-            right: 20px; /* दाएं से 20px अंदर */
-            cursor: pointer; /* माउस पॉइंटर को हाथ में बदलेगा */
-            z-index: 1000; /* सबसे ऊपर दिखेगा */
-            width: 75px; /* बटन की चौड़ाई */
-            height: 75px; /* बटन की ऊंचाई */
-            border: 3px solid #FFD700; /* बॉर्डर (3px मोटा, सॉलिड, गोल्डन कलर) */
-            border-radius: 50%; /* बटन को पूरा गोल बनाएं */
-            display: flex; /* अंदर के कंटेंट को सेंटर में रखने के लिए */
-            justify-content: center; /* हॉरिज़ॉन्टल सेंटर */
-            align-items: center; /* वर्टिकल सेंटर */
-            box-shadow: 0 0 15px #FFD700; /* गोल्डन शैडो */
-            animation: glow 1.5s ease-in-out infinite alternate; /* चमकने का एनिमेशन */
-            transition: opacity 0.3s ease; /* फेड इन/आउट इफेक्ट */
+        .cart-section {
+            background-color: #F8F7F2;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(10, 26, 47, 0.2);
+            border: 2px solid #F5E050;
         }
         
-        /* चमकने का एनिमेशन */
-        @keyframes glow {
-            from {
-                box-shadow: 0 0 10px #FFD700; /* कम चमक */
-            }
-            to {
-                box-shadow: 0 0 20px #FFD700, 0 0 30px #FFD700; /* ज्यादा चमक */
-            }
+        .cart-section h2 {
+            color: #0A1A2F;
+            border-bottom: 2px solid #F5E050;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
         }
         
-        /* फ्लोटिंग कार्ट में टोटल प्राइस का स्टाइल */
-        .floating-cart .total {
-            color: #FFD700; /* गोल्डन टेक्स्ट */
-            font-size: 24px; /* फॉन्ट साइज़ */
-            font-weight: bold; /* मोटा टेक्स्ट */
-            text-shadow: 0 0 10px #FFD700; /* टेक्स्ट शैडो - चमकने के लिए */
+        .form-group {
+            margin-bottom: 15px;
         }
         
-        /* शीर्षक कंटेनर का स्टाइल */
-        .title-container {
-            position: relative; /* रिलेटिव पोजीशन */
-            overflow: hidden; /* अंदर के कंटेंट को बॉक्स के अंदर ही रखेगा */
-        }
-
-        /* शीर्षक रैपर का स्टाइल */
-        .title-wrapper {
-            display: flex; /* फ्लेक्स डिस्प्ले */
-            flex-direction: column; /* कॉलम में आइटम्स */
-            align-items: center; /* आइटम्स को सेंटर में */
-            margin-bottom: 2rem; /* नीचे का स्पेस */
-        }
-
-        /* मुख्य शीर्षक का ऊपरी भाग */
-        .main-title-top {
-            font-size: 4rem; /* बहुत बड़ा फॉन्ट */
-            font-weight: 900; /* बहुत मोटा टेक्स्ट */
-            color: transparent; /* गोल्डन टेक्स्ट */
-            text-align: center; /* सेंटर अलाइनमेंट */
-            margin-bottom: -0.5rem; /* दूसरे भाग के साथ ओवरलैप के लिए */
-            text-shadow: 0 0 15px #FFD700; /* टेक्स्ट शैडो - चमकने के लिए */
-            animation: glowingTitle 3s ease-in-out infinite; /* चमकने का एनिमेशन */
-        }
-
-        /* मुख्य शीर्षक का निचला भाग */
-        .main-title-bottom {
-            font-size: 3rem; /* बड़ा फॉन्ट, पर ऊपरी भाग से छोटा */
-            font-weight: 800; /* मोटा टेक्स्ट, पर ऊपरी भाग से कम */
-            color: #FFD700; /* गोल्डन टेक्स्ट */
-            text-align: center; /* सेंटर अलाइनमेंट */
-            text-shadow: 0 0 12px #FFD700; /* टेक्स्ट शैडो - चमकने के लिए */
-            animation: glowingTitle 3s ease-in-out infinite; /* चमकने का एनिमेशन */
-        }
-
-        /* उपशीर्षक (सबटाइटल) का स्टाइल */
-        .subtitle {
-            font-size: 1.5rem; /* मध्यम फॉन्ट साइज़ */
-            color: #FFD700; /* गोल्डन टेक्स्ट */
-            text-align: center; /* सेंटर अलाइनमेंट */
-            font-weight: 600; /* थोड़ा मोटा टेक्स्ट */
-            margin-top: 0.5rem; /* ऊपर का स्पेस */
-            text-shadow: 0 0 10px #FFD700; /* टेक्स्ट शैडो - चमकने के लिए */
-            animation: breathe 4s ease-in-out infinite; /* सांस लेने जैसा एनिमेशन */
-        }
-
-        /* शीर्षक के लिए चमकने का एनिमेशन */
-        @keyframes glowingTitle {
-            0%, 100% {
-                filter: drop-shadow(0 0 3px #FFD700); /* कम चमक */
-            }
-            50% {
-                filter: drop-shadow(0 0 2px #FFD700); /* ज्यादा चमक */
-            }
-        }
-
-        /* सांस लेने जैसा एनिमेशन */
-        @keyframes breathe {
-            0%, 100% {
-                transform: scale(1); /* नॉर्मल साइज़ */
-                opacity: 1; /* पूरी ओपेसिटी */
-            }
-            50% {
-                transform: scale(1.05); /* थोड़ा बड़ा */
-                opacity: 0.8; /* थोड़ा ट्रांसपेरेंट */
-            }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #0A1A2F;
+            font-weight: 500;
         }
         
-        /* मुख्य शीर्षक का स्टाइल */
-        .main-title {
-            font-family: 'Montserrat', sans-serif;
- /* फॉन्ट फैमिली */
-            font-size: 2.8rem; /* फॉन्ट साइज़ */
-            font-weight: bold; /* मोटा टेक्स्ट */
-            color: transparent;  /* गोल्डन टेक्स्ट */
-            text-align: center; /* सेंटर अलाइनमेंट */
-            letter-spacing: 3px; /* अक्षरों के बीच स्पेस */
-            text-shadow: 0 0 2px #FFD700;  /* गोल्डन टेक्स्ट शैडो */
-            margin-bottom: 0.5rem; /* नीचे का स्पेस */
-            line-height: 1.2; /* लाइन हाइट */
-            position: relative; /* रिलेटिव पोजीशन */
-            z-index: 1; /* z-इंडेक्स */
-            animation: glow 1.5s ease-in-out infinite alternate;  /* चमकने का एनिमेशन */
-        }
-        
-        /* फ्लेयर इफेक्ट */
-        .main-title::before {
-            content: attr(data-text); /* data-text एट्रिब्यूट से टेक्स्ट लेगा */
-            position: absolute; /* एब्सोल्यूट पोजीशन */
-            left: 0;
-            top: 0;
+        .input-field {
             width: 100%;
-            height: 100%;
-            z-index: -1; /* मुख्य टेक्स्ट के पीछे */
-            color: transparent; /* ट्रांसपेरेंट टेक्स्ट */
-            -webkit-text-stroke: 1px #FFD700; /* टेक्स्ट आउटलाइन (गोल्डन) */
-            animation: flare 4s linear infinite; /* फ्लेयर एनिमेशन */
+            background: #F8F7F2;
+            border: 2px solid #F5E050;
+            border-radius: 8px;
+            padding: 10px;
+            color: #0A1A2F;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-family: 'Lora', serif;
         }
         
-        /* फ्लेयर एनिमेशन */
-        @keyframes flare {
-            0% {
-                filter: drop-shadow(0 0 0 #FFD700); /* कोई शैडो नहीं */
-            }
-            25% {
-                filter: drop-shadow(0 0 5px #FFD700); /* थोड़ी शैडो */
-            }
-            50% {
-                filter: drop-shadow(0 0 10px #FFD700); /* ज्यादा शैडो */
-            }
-            75% {
-                filter: drop-shadow(0 0 5px #FFD700); /* थोड़ी शैडो */
-            }
-            100% {
-                filter: drop-shadow(0 0 0 #FFD700); /* कोई शैडो नहीं */
-            }
+        .order-button {
+            width: 100%;
+            background: #0A1A2F;
+            color: #F5E050;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, color 0.3s ease;
+            font-family: 'Lora', serif;
+        }
+        
+        .floating-cart {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #0A1A2F;
+            color: #F5E050;
+            padding: 10px 15px;
+            border-radius: 50px;
+            box-shadow: 0 0 15px rgba(245, 224, 80, 0.4);
+            border: 2px solid #F5E050;
+            z-index: 100;
+            transition: opacity 0.3s ease;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            border-top: 1px solid #F5E050;
+        }
+        
+        .hidden {
+            display: none;
         }
     </style>
 </head>
-<body class="bg-gray-100 font-sans">
-    <!-- मुख्य कंटेनर -->
-    <div class="container mx-auto p-4">
-        <!-- Places to Visit In Ujjain बटन - सही तरीके से बनाया गया -->
-        <a href="Places%20to%20visit%20in%20Ujjain.html" class="places-button">
-            <i class="fas fa-map-marked-alt mr-2"></i> Places to Visit In Ujjain
-        </a>
+<body>
+    <div class="container">
+        <header>
+            <a href="https://ujjain-tourism.vercel.app/" target="_blank" class="places-button">Places to Visit in Ujjain</a>
+            <h1 style="color: #F5E050; text-align: center; margin-bottom: 10px;">RAI GUEST HOUSE</h1>
+            <h2 style="color: #F5E050; text-align: center; margin-bottom: 20px;">Restaurant Menu</h2>
+        </header>
         
-        <!-- मुख्य शीर्षक अनुभाग -->
-        <div class="title-container">
-            <h1 class="main-title" data-text="RAI GUEST HOUSE">RAI GUEST HOUSE</h1>
-            <p class="subtitle">Restaurant Menu</p>
-        </div>
-
-        <!-- मेनू आइटम्स -->
-        <div id="menu-items" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-
-        <!-- कार्ट अनुभाग -->
-        <h2 class="text-2xl font-semibold mt-8 mb-4">Your Cart</h2>
-        <ul id="cart-items" class="mb-4"></ul>
-        <p class="text-lg font-semibold">Total: ₹<span id="cart-total">0</span></p>
-
-        <!-- ऑर्डर फॉर्म -->
-        <div class="mt-6">
-            <!-- रूम नंबर इनपुट फील्ड -->
-            <label for="room-number" class="block text-lg font-medium mb-2">Room Number:</label>
-            <input type="text" id="room-number" 
-                   placeholder="Enter your room number" 
-                   class="border p-2 rounded w-full mb-4" 
-                   required>
-
-            <!-- मोबाइल नंबर इनपुट फील्ड -->
-            <label for="mobile-number" class="block text-lg font-medium mb-2">Mobile Number:</label>
-            <input type="tel" id="mobile-number" 
-                   placeholder="Enter your mobile number" 
-                   pattern="[0-9]{10}" 
-                   class="border p-2 rounded w-full mb-4" 
-                   required>
-
-            <!-- महत्वपूर्ण सूचना बॉक्स -->
-            <div class="warning-note p-4 rounded border border-yellow-400 my-4 bg-yellow-50">
-                <strong class="text-yellow-700">⚠️ Important Notice / जरूरी सूचना:</strong>
-                <ul class="list-disc ml-4 mt-2 text-yellow-700">
-                    <li>Enter the SAME mobile number you provided during check-in<br>
-                        वही मोबाइल नंबर डालें जो आपने check-in के समय दिया था</li>
-                    <li>Select your correct room number<br>
-                        सही रूम नंबर चुनें</li>
-                </ul>
+        <div class="menu-section">
+            <div id="menu-items">
+                <!-- Menu items will be loaded here by JavaScript -->
             </div>
-
-            <!-- नियम और शर्तें स्वीकार करने का चेकबॉक्स -->
-            <div class="terms-agreement mb-4">
-                <input type="checkbox" id="terms-checkbox" class="mr-2" required>
-                <label for="terms-checkbox">
-                    I confirm that I have entered the correct room number and check-in mobile number<br>
-                    मैं पुष्टि करता/करती हूं कि मैंने सही रूम नंबर और check-in वाला मोबाइल नंबर डाला है
-                </label>
+        </div>
+        
+        <div id="cart-section" class="cart-section">
+            <h2>Your Cart</h2>
+            <div id="cart-items">
+                <!-- Cart items will be loaded here by JavaScript -->
+                <div class="text-base text-center p-3">Your cart is empty</div>
+            </div>
+            <div class="total-section" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #F5E050;">
+                <div style="display: flex; justify-content: space-between; color: #0A1A2F;">
+                    <span style="font-weight: bold;">Total:</span>
+                    <span style="font-weight: bold;">₹<span id="cart-total">0</span></span>
+                </div>
             </div>
             
-            <!-- ऑर्डर प्लेस करने का बटन -->
-            <button id="submit-order" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
-                Place Order
-            </button>
-            <!-- 
-                यह बटन ऑर्डर सबमिट करने के लिए है
-                bg-green-500: हरा बैकग्राउंड कलर
-                text-white: सफेद टेक्स्ट कलर
-                px-6: बाएं-दाएं 6 यूनिट पैडिंग
-                py-2: ऊपर-नीचे 2 यूनिट पैडिंग
-                rounded: गोल कोने
-                hover:bg-green-600: माउस ले जाने पर गहरा हरा बैकग्राउंड
-            -->
-        </div>
-    </div>
-    
-    <!-- फ्लोटिंग कार्ट बटन - स्क्रीन के निचले दाहिने कोने में दिखता है -->
-    <div class="floating-cart" onclick="document.getElementById('cart-items').scrollIntoView({behavior: 'smooth'})">
-        <span class="total">₹<span id="floating-total">0</span></span>
-        <!-- 
-            यह बटन स्क्रीन के निचले दाहिने कोने में दिखता है
-            position: fixed: स्क्रॉल करने पर भी यहीं रहेगा
-            bottom: 20px: नीचे से 20px ऊपर
-            right: 20px: दाएं से 20px अंदर
-            cursor: pointer: माउस पॉइंटर को हाथ में बदलेगा
-            z-index: 1000: सबसे ऊपर दिखेगा
-            width: 75px: बटन की चौड़ाई
-            height: 75px: बटन की ऊंचाई
-            border: 3px solid #FFD700: गोल्डन बॉर्डर
-            border-radius: 50%: बटन को पूरा गोल बनाएं
-            box-shadow: 0 0 15px #FFD700: गोल्डन शैडो
-            animation: glow 1.5s ease-in-out infinite alternate: चमकने का एनिमेशन
-        -->
-    </div>
-
-    <!-- फुटर अनुभाग - संपर्क जानकारी और कॉपीराइट -->
-    <footer class="bg-[#800000] text-[#FFD700] py-4 mt-8">
-        <!-- 
-            bg-[#800000]: मैरून बैकग्राउंड
-            text-[#FFD700]: गोल्डन टेक्स्ट
-            py-4: ऊपर-नीचे 4 यूनिट पैडिंग
-            mt-8: ऊपर से 8 यूनिट मार्जिन
-        -->
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
-                <!-- संपर्क जानकारी -->
-                <div>
-                    <h3 class="text-lg font-bold mb-2">Contact Us</h3>
-                    <p>📞 +91 9111191152</p>
-                    <p>📧 raiguesthouse@yahoo.com</p>
-                    <p>📍 Nijatpura, Near Tiwari Nursing Home Ujjain</p>
-                    <p>    Madhya Pradesh</p>
+            <div style="margin-top: 20px;">
+                <div class="form-group">
+                    <label for="room-number">Room Number:</label>
+                    <input type="text" id="room-number" class="input-field" placeholder="Enter your room number">
                 </div>
-                <!-- कॉपीराइट जानकारी -->
-                <div class="text-center mt-6 pt-4 border-t border-[#FFD700]">
-                    <p>© 2025 Rai Guest House. All rights reserved.</p>
-                    <p class="text-sm mt-1">Developed & Maintained by <span class="font-semibold"><strong>Aakash Rai</strong></span></p>
+                
+                <div class="form-group">
+                    <label for="mobile-number">Mobile Number:</label>
+                    <input type="tel" id="mobile-number" class="input-field" placeholder="Enter your mobile number">
                 </div>
+                
+                <div class="form-group" style="display: flex; align-items: center; margin-bottom: 20px;">
+                    <input type="checkbox" id="terms-checkbox" style="margin-right: 10px;">
+                    <label for="terms-checkbox" style="color: #0A1A2F; margin: 0;">I agree to the terms and conditions</label>
+                </div>
+                
+                <button id="submit-order" class="order-button">Place Order</button>
             </div>
         </div>
-    </footer>
+        
+        <footer>
+            <p>&copy; 2023 Rai Guest House. All rights reserved.</p>
+        </footer>
+    </div>
     
-    <!-- जावास्क्रिप्ट फाइल का लिंक -->
+    <div class="floating-cart">
+        <span>Total: ₹<span id="floating-total">0</span></span>
+    </div>
+    
     <script src="script.js"></script>
-    <!-- 
-        यह जावास्क्रिप्ट फाइल को लोड करता है
-        script.js: जावास्क्रिप्ट फाइल का नाम
-    -->
 </body>
 </html>
