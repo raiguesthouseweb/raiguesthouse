@@ -17,12 +17,16 @@
             padding: 2rem 0;
             text-align: center;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         .home-button {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
+            margin-bottom: 15px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
         
         .title {
@@ -79,13 +83,19 @@
 <body>
     <!-- हेडर सेक्शन -->
     <div class="header">
-        <!-- Add Home button in the top corner -->
+        <!-- Home button moved to top -->
         <div class="home-button">
-            <a href="index.html" class="inline-block bg-[#800000] text-[#FFD700] px-4 py-2 rounded border-2 border-[#FFD700] hover:bg-[#A52A2A] transition-colors">
-                Home
+            <a href="index.html" class="inline-block bg-[#800000] text-[#FFD700] px-4 py-2 rounded border border-[#FFD700] hover:bg-[#A52A2A] transition-colors" style="background-color: rgba(128, 0, 0, 0.8); box-shadow: 0 0 10px #FFD700;">
+                <span class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Home
+                </span>
             </a>
         </div>
         
+        <!-- Title now appears below the home button -->
         <h1 class="title">RAI GUEST HOUSE</h1>
         <p class="subtitle">Places To Visit In Ujjain</p>
     </div>
@@ -114,8 +124,8 @@
                 The temple is known for its Bhasma Aarti, a special ritual performed early in the morning.
             </p>
             <ul class="list-disc pl-5 space-y-2">
-                <li>Distance from Rai Guest House: 2 km</li>
-                <li>Timings: 4:00 AM to 11:00 PM</li>
+                <li>Distance from Rai Guest House: 1.2 to 1.5km</li>
+                <li>Timings: 4:00 AM to 10:00 PM</li>
                 <li>Special Attraction: Bhasma Aarti at 4:00 AM</li>
             </ul>
         </div>
