@@ -5,10 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Places To Visit In Ujjain - Rai Guest House</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
-            background-color: #f3f4f6;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Lora', serif;
+            background: linear-gradient(135deg, #0A1A2F 0%, #1E3A5F 100%);
+            color: #F5E050;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
         }
         
         .header {
@@ -30,15 +38,67 @@
         }
         
         .title {
-            font-size: 2.5rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.8rem;
             font-weight: bold;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            color: transparent;
+            text-align: center;
+            letter-spacing: 3px;
+            text-shadow: 0 0 2px #FFD700;
             margin-bottom: 0.5rem;
+            line-height: 1.2;
+            position: relative;
+            z-index: 1;
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+        
+        .title::before {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            color: transparent;
+            -webkit-text-stroke: 1px #FFD700;
+            animation: flare 4s linear infinite;
+        }
+        
+        @keyframes flare {
+            0% {
+                filter: drop-shadow(0 0 0 #FFD700);
+            }
+            25% {
+                filter: drop-shadow(0 0 5px #FFD700);
+            }
+            50% {
+                filter: drop-shadow(0 0 10px #FFD700);
+            }
+            75% {
+                filter: drop-shadow(0 0 5px #FFD700);
+            }
+            100% {
+                filter: drop-shadow(0 0 0 #FFD700);
+            }
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #F5E050;
+            }
+            to {
+                text-shadow: 0 0 20px #F5E050, 0 0 30px #F5E050;
+            }
         }
         
         .subtitle {
-            font-size: 1.2rem;
+            font-family: 'Lora', serif;
+            font-size: 1.5rem;
             color: #FFD700;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 5px rgba(128, 0, 0, 0.7);
         }
         
         .content {
@@ -48,20 +108,30 @@
         }
         
         .section {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(245, 224, 80, 0.3);
             padding: 2rem;
             margin-bottom: 2rem;
+            border: 1px solid rgba(245, 224, 80, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .section:hover {
+            box-shadow: 0 8px 25px rgba(245, 224, 80, 0.5);
+            transform: translateY(-5px);
         }
         
         .section-title {
-            color: #800000;
+            color: #F5E050;
+            font-family: 'Montserrat', sans-serif;
             font-size: 1.8rem;
             font-weight: bold;
             margin-bottom: 1rem;
-            border-bottom: 2px solid #FFD700;
+            border-bottom: 2px solid #F5E050;
             padding-bottom: 0.5rem;
+            text-shadow: 0 0 5px rgba(245, 224, 80, 0.3);
         }
         
         .footer {
@@ -73,9 +143,27 @@
         
         .place-image {
             width: 100%;
-            height: 200px;
+            height: 250px;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(245, 224, 80, 0.3);
+        }
+        
+        .place-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 15px rgba(245, 224, 80, 0.4);
+        }
+        
+        ul.list-disc li {
+            color: #F5E050;
+            margin-bottom: 0.5rem;
+        }
+        
+        p {
+            line-height: 1.6;
             margin-bottom: 1rem;
         }
     </style>
@@ -85,7 +173,8 @@
     <div class="header">
         <!-- Home button moved to top -->
         <div class="home-button">
-            <a href="index.html" class="inline-block bg-[#800000] text-[#FFD700] px-4 py-2 rounded border border-[#FFD700] hover:bg-[#A52A2A] transition-colors" style="background-color: rgba(128, 0, 0, 0.8); box-shadow: 0 0 10px #FFD700;">
+            <a href="index.html" class="inline-block px-4 py-2 rounded border border-[#FFD700] transition-all duration-300" 
+               style="background: linear-gradient(45deg, #800000, #A52A2A); color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
                 <span class="flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -96,7 +185,7 @@
         </div>
         
         <!-- Title now appears below the home button -->
-        <h1 class="title">RAI GUEST HOUSE</h1>
+        <h1 class="title" data-text="RAI GUEST HOUSE">RAI GUEST HOUSE</h1>
         <p class="subtitle">Places To Visit In Ujjain</p>
     </div>
     
@@ -118,7 +207,7 @@
         <!-- महाकालेश्वर मंदिर -->
         <div class="section">
             <h2 class="section-title">Mahakaleshwar Temple</h2>
-            <img src="https://drive.google.com/file/d/1ojIaqB2FFxdjRmifoTLiGVdXsIail-Ml/view?usp=sharing" alt="Mahakaleshwar Temple" class="place-image">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Mahakaleshwar_Temple.jpg/1200px-Mahakaleshwar_Temple.jpg" alt="Mahakaleshwar Temple" class="place-image">
             <p class="mb-4">
                 One of the twelve Jyotirlingas in India, the Mahakaleshwar Temple is dedicated to Lord Shiva. 
                 The temple is known for its Bhasma Aarti, a special ritual performed early in the morning.
@@ -197,14 +286,28 @@
                 We also provide maps and local insights to make your Ujjain experience memorable.
             </p>
             <p class="mb-2">📞 Contact our travel desk: +91 9111191152</p>
-            <!-- Removed the Back to Menu button from here -->
         </div>
     </div>
     
     <!-- फुटर सेक्शन -->
     <div class="footer">
-        <p>© 2025 Rai Guest House. All rights reserved.</p>
-        <p class="mt-2">Developed & Maintained by <strong>Aakash Rai</strong></p>
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+                <!-- संपर्क जानकारी -->
+                <div>
+                    <h3 class="text-lg font-bold mb-2">Contact Us</h3>
+                    <p>📞 +91 9111191152</p>
+                    <p>📧 raiguesthouse@yahoo.com</p>
+                    <p>📍 Nijatpura, Near Tiwari Nursing Home Ujjain</p>
+                    <p>    Madhya Pradesh</p>
+                </div>
+                <!-- कॉपीराइट जानकारी -->
+                <div class="text-center mt-6 pt-4 border-t border-[#FFD700]">
+                    <p>© 2025 Rai Guest House. All rights reserved.</p>
+                    <p class="text-sm mt-1">Developed & Maintained by <span class="font-semibold"><strong>Aakash Rai</strong></span></p>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
