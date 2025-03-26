@@ -27,7 +27,7 @@ let cart = [];
 let total = 0;
 
 // API endpoints for order submission and menu fetching
-const API_URL = "https://raiguesthouse-orujgkxvc-raiguesthouses-projects-kkzhkqxan.vercel.app/submit-order";
+const API_URL = "https://raiguesthouse-orujgkxvc-raiguesthouses-projects-f2380489.vercel.app/submit-order";
 const MENU_URL = "https://rai-guest-house-proxy-kkzhkqxan-raiguesthouses-projects.vercel.app/menu";
 
 // showInitialWarning function - modified to never show the warning
