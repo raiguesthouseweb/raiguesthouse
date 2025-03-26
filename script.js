@@ -31,41 +31,44 @@ const API_URL = "https://raiguesthouse-orujgkxvc-raiguesthouses-projects-f238048
 const MENU_URL = "https://rai-guest-house-proxy-kkzhkqxan-raiguesthouses-projects.vercel.app/menu";
 
 // showInitialWarning फंक्शन
-// यह फंक्शन वेबसाइट खुलते ही एक वॉर्निंग मैसेज दिखाता है
-// localStorage में 'warningAgreed' चेक करता है - अगर पहले से agreed है तो वॉर्निंग नहीं दिखेगी
-// हिंदी और इंग्लिश दोनों में मैसेज दिखाता है
-// OK क्लिक करने पर localStorage में 'warningAgreed' सेट हो जाता है
-// Remove the old warning function and replace with this new one
+// यह फंक्शन वेबसाइट पर एक महत्वपूर्ण सूचना दिखाता है
+// जब यूजर पहली बार वेबसाइट खोलता है तब हह सूचना दिखाई देती है
+// localStorage का उपयोग करके यह चेक किया जाता है कि यूजर ने पहले इस सूचना को देखा है या नहीं
 function showInitialWarning() {
+    // localStorage से चेक करें कि यूजर ने पहले सूचना को स्वीकार किया है या नहीं
     const agreed = localStorage.getItem('warningAgreed');
     if (!agreed) {
-        // Create modal element first
+        // मॉडल एलयड बनाएं जो पूरी स्क्रीन पर दिखेगा
         const modal = document.createElement('div');
         
+        // मॉडल का स्टाइल सेट करें - यह पूरी स्क्रीन पर फिक्स्ड रहेगा
         modal.style.position = 'fixed';
         modal.style.top = '0';
         modal.style.left = '0';
         modal.style.right = '0';
         modal.style.bottom = '0';
-        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // अर्ध-पारदर्शी काला बैकग्राउंड
         modal.style.display = 'flex';
         modal.style.alignItems = 'center';
         modal.style.justifyContent = 'center';
-        modal.style.zIndex = '9999';
+        modal.style.zIndex = '99999'; // बह॥त ज्यादा z-index ताकि यह सबसे ऊपर दिखे
 
+        // मॉडल का कंटेंट बॉक्स बनाएं जिसमें सूचना दिखेगी
         const modalContent = document.createElement('div');
-        modalContent.style.backgroundColor = '#FFFBEB'; // Warm yellow background
+        modalContent.style.backgroundColor = '#FFFBEB'; // हल्का पीला बैकग्राउंड
         modalContent.style.padding = '20px';
-        modalContent.style.borderRadius = '8px';
+        modalContent.style.borderRadius = '8px'; // गोल कोने
         modalContent.style.maxWidth = '90%';
         modalContent.style.width = '400px';
         modalContent.style.margin = '20px';
-        modalContent.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        modalContent.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'; // हल्की शैडो
+        modalContent.style.position = 'relative'; // रिलेटिव पोजिशन ताकि अंदर के एलिमेंट्स सही जगह पर रहें
 
+        // मॉडल का HTML कंटेंट सेट करें - शीर्षक, सूचना और बटन
         modalContent.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0; font-size: 18px; color: #92400E;">जरूरी सूचना / Important Notice</h3>
-                <button id="close-warning" style="border: none; background: none; font-size: 20px; cursor: pointer; color: #92400E;">✕</button>
+                <button id="close-warning" style="border: none; background: none; font-size: 20px; cursor: pointer; color: #92400E; padding: 8px;">✕</button>
             </div>
             <div style="margin-bottom: 20px;">
                 <p style="margin: 0 0 10px 0; color: #92400E; font-size: 14px;">कृपया सुनिश्चित करें / Please ensure:</p>
@@ -81,32 +84,75 @@ function showInitialWarning() {
                 </p>
             </div>
             <div style="text-align: right;">
-                <button id="accept-warning" style="background-color: #92400E; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; transition: background-color 0.2s;">
+                <button id="accept-warning" style="background-color: #92400E; color: white; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; transition: background-color 0.2s; -webkit-tap-highlight-color: transparent;">
                     समझ गया / I Understand
                 </button>
             </div>
         `;
 
+        // मॉडल को पेज पर जोड़ें
         modal.appendChild(modalContent);
         document.body.appendChild(modal);
 
+        // मॉडल को बंद करने के लिए फंक्शन - यह localStorage में सेट करेगा कि यूजर ने सूचना देख ली है
         const closeModal = () => {
             modal.remove();
             localStorage.setItem('warningAgreed', 'true');
         };
 
-        document.getElementById('close-warning').onclick = closeModal;
-        document.getElementById('accept-warning').onclick = closeModal;
+        // बटन्स के लिए वेरिएबल्स बनाएं
+        const closeBtn = document.getElementById('close-warning');
+        const acceptBtn = document.getElementById('accept-warning');
+
+        // क्बोज बटन पर क्लिक और टच इवेंट्स जोड़ें - मोबाइल डिवाइस के लिए महत्वपूर्ण
+        if (closeBtn) {
+            ['click', 'touchend'].forEach(eventType => {
+                closeBtn.addEventListener(eventType, function(e) {
+                    e.preventDefault(); // डिफॉल्ट इवेंट को रोकें
+                    e.stopPropagation(); // इवेंट को आगे बढ़ने से रोकें
+                    closeModal();
+                }, false);
+            });
+        }
+
+        // स्वीकार बटन पर क्लिक और टच इवेंट्स जोड़ें - मोबाइल डिवाइस के लिए महत्वपूर्ण
+        if (acceptBtn) {
+            ['click', 'touchend'].forEach(eventType => {
+                acceptBtn.addEventListener(eventType, function(e) {
+                    e.preventDefault(); // डिफॉल्ट इवेंट को रोकें
+                    e.stopPropagation(); // इवेंट को आगे बढ़ने से रोकें
+                    closeModal();
+                }, false);
+            });
+            
+            // बटन को अधिक आकर्षक बनाएं
+            acceptBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+            
+            // होवर और एक्टिव स्टेट्स जोड़ें - बेहतर यूजर फीडबैक के लिए
+            acceptBtn.addEventListener('mouseover', function() {
+                this.style.backgroundColor = '#B45309'; // होवर पर गहरा रंग
+            });
+            
+            acceptBtn.addEventListener('mouseout', function() {
+                this.style.backgroundColor = '#92400E'; // सामान्त रंग
+            });
+            
+            // टच स्क्रीन के लिए टचस्टार्ट इवेंट
+            acceptBtn.addEventListener('touchstart', function() {
+                this.style.backgroundColor = '#B45309'; // टच पर गहरा रंग
+            });
+        }
     }
 }
 
 // fetchMenu फंक्शन
 // सर्वर से मेनू आइटम्स को फेच करता है
 // अगर कोई एरर आता है तो एरर मैसेज दिखाता है
-// सफल होने पर displayMenu फंक्शन को कॉल करता है
+// In the fetchMenu function, remove the call to showInitialWarning()
 async function fetchMenu() {
     try {
-        showInitialWarning();
+        // Remove this line:
+        // showInitialWarning();
         
         // Add loading indicator
         const menuDiv = document.getElementById('menu-items');
@@ -225,7 +271,7 @@ async function fetchMenu() {
 // मेनू आइटम्स को वेबसाइट पर दिखाता है
 // हर कैटेगरी के लिए अलग सुक्शन बनाता है
 // हर आइटम के साथ Add बटन दिखाता है
-// कैटेगरी का कलर, साइज, स्पेसिंग यहीं से कंट्लोल होती है
+// कैटेगरी का कलर, साइज, स्पेसिंग यहीं से कंट्लो��ol होती है
 function displayMenu(menuItems) {
     // Add background style to document body
     if (!document.querySelector('#pageBackground')) {
@@ -497,7 +543,7 @@ function addToCart(name, price) {
 }
 
 // removeFromCart फंक्शन
-// Remove बटन पर क्लिक करने पर चलता है
+// Remove बटन पर क्��clिक करने पर चलता है
 // आइटम की क्वांटिटी कम करता है
 // अगर क्वांटिटी 0 हो जाती है तो आइटम को कार्ट से हटा देता है
 // ���������� अमाउंट को अपडेट करता है
@@ -514,7 +560,7 @@ function removeFromCart(name, price) {
 }
 
 // submitOrder फंक्शन
-// ऑर्डर बटन पर क्लिक करने पर चलता है
+// ऑर्डर बटन पर क्��clिक करने पर चलता है
 // चेक करता है:
 // - कार्ट खाली तो नहीं
 // - रूम नंबर और मोबाइल नंबर भरे गए हैं या नहीं
@@ -578,8 +624,8 @@ async function submitOrder() {
 }
 
 // इवेंट लिसनर
-// ऑर्डर बटन पर क्लिक इवेंट को सुनता है
-// क्लिक होने पर submitOrder फंक्शन को कॉल करता है
+// ऑर्डर बटन पर क्��clिक इवेंट को सुनता है
+// क्��clिक होने पर submitOrder फंक्शन को कॉल करता है
 // Make sure DOM is loaded before adding event listener
 document.addEventListener('DOMContentLoaded', function() {
     // Fix: Check for both possible button IDs
@@ -607,23 +653,6 @@ document.addEventListener('DOMContentLoaded', function() {
 fetchMenu();
 
 
-// Remove these functions
-function updateRestaurantStatus() {
-    const statusDiv = document.createElement('div');
-    statusDiv.className = 'bg-yellow-100 p-4 rounded-lg shadow-sm mb-4 text-center';
-    statusDiv.innerHTML = `
-        <p class="text-lg font-semibold text-yellow-800">
-          <strong>  🕙 Restaurant Hours
-        </p>
-        <p class="text-md text-yellow-700">
-            10:00 AM - 11:00 PM
-        </p>
-    
-    `;
-    
-    const menuDiv = document.getElementById('menu-items');
-    menuDiv.parentNode.insertBefore(statusDiv, menuDiv);
-}
 // Replace with just
 document.addEventListener('DOMContentLoaded', fetchMenu);
 
@@ -638,25 +667,25 @@ function styleVisitButton() {
             link.textContent.includes('Places to Visit in Ujjain')) {
             
             // पुराने लिंक की जगह नया बटन बनाना
-            // यह पुराने टेक्स्ट को हटाकर स्टाइल किया हुआ बटन दिखाएगा
+            // यह पुराने टेक्स्अड को हटाकर स्टाइल किया हुआ बटन दिखाएगा
             const button = document.createElement('a');
             button.href = link.href;
-            button.textContent = 'Places to Visit in Ujjain'; // बटन पर दिखने वाला टेक्स्ट - इसे बदल सकते हैं
+            button.textContent = 'Places to Visit in Ujjain'; // बटन पर दिखने वाला टेक्स्अड - इसे बदल सकते हैं
             button.target = '_blank'; // नए टैब में खुलेगा - इसे '_self' में बदल सकते हैं अगर उसी टैब में खोलना है
             
             // बटन का स्टाइल - इन सभी प्रॉपर्टीज को अपने हिसाब से बदल सकते हैं
             button.style.display = 'inline-block';
             button.style.backgroundColor = '#800000'; // बटन का बैकग्राउंड कलर - मरून कलर है, इसे बदल सकते हैं
-            button.style.color = '#FFD700'; // बटन का टेक्स्ट कलर - गोल्डन कलर है, इसे बदल सकते हैं
+            button.style.color = '#FFD700'; // बटन का टेक्स्अड कलर - गोल्डन कलर है, इसे बदल सकते हैं
             button.style.padding = '8px 16px'; // बटन का पैडिंग - इसे बढ़ा या घटा सकते हैं
             button.style.borderRadius = '8px'; // बटन के कोनों का गोलापन - इसे बदल सकते हैं
             button.style.textDecoration = 'none'; // अंडरलाइन हटाने के लिए
-            button.style.fontWeight = 'bold'; // टेक्स्ट को बोल्ड करने के लिए
+            button.style.fontWeight = 'bold'; // टेक्स्अड को बोल्ड करने के लिए
             button.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)'; // बटन की शैडो - इसे बदल सकते हैं
             button.style.margin = '10px 0'; // बटन के चारों ओर स्पेस
             button.style.transition = 'all 0.3s ease'; // एनिमेशन इफेक्ट के लिए
             button.style.fontSize = '14px'; // फॉन्ट साइज - इसे बदल सकते हैं
-            button.style.textAlign = 'center'; // टेक्स्ट अलाइनमेंट
+            button.style.textAlign = 'center'; // टेक्स्अलाइनमेंट
             button.style.width = 'auto'; // बटन की चौड़ाई
             
             // होवर इफेक्ट - जब माउस बटन पर जाए तो क्या होगा
@@ -667,7 +696,7 @@ function styleVisitButton() {
                 this.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.4)'; // होवर पर शैडो बड़ी होगी
             };
             
-            // माउस हटाने पर बटन वापस नॉर्मल हो जाएगा
+            // माउस टाने पर बटन वापस नॉर्मल हो जाएगा
             button.onmouseout = function() {
                 this.style.backgroundColor = '#800000'; // नॉर्मल बैकग्राउंड कलर
                 this.style.transform = 'translateY(0)'; // नॉर्मल पोजीशन
@@ -675,7 +704,7 @@ function styleVisitButton() {
             };
             
             // पुराने लिंक को नए बटन से रिप्लेस करना
-            // यह लाइन सबसे महत्वपूर्ण है - यह पुराने टेक्स्ट को हटाकर नया बटन दिखाएगी
+            // यह लाइन सबसे महत्वपूर्ण है - यह पुराने टेक्स्अड को हटाकर नया बटन दिखाएगी
             link.parentNode.replaceChild(button, link);
         }
     });
