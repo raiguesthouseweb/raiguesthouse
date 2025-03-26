@@ -16,8 +16,8 @@ window.addEventListener('scroll', function() {
             floatingCart.style.pointerEvents = 'auto';
         }
     }
-});// कार्ट एक खाली एरे है जिसमें सभी चुने गए आइटम्स स्टोर होंगे
-// इसे खाली करने से सारे सिलेक्ठेड आइटम्स गायब हो जाएंगे
+});
+
 // Initialize empty cart array to store selected items
 // Each item will have: name, price, and quantity
 let cart = [];
@@ -27,140 +27,28 @@ let cart = [];
 let total = 0;
 
 // API endpoints for order submission and menu fetching
-const API_URL = "https://raiguesthouse-orujgkxvc-raiguesthouses-projects-f2380489.vercel.app/submit-order";
+const API_URL = "https://raiguesthouse-orujgkxvc-raiguesthouses-projects-kkzhkqxan.vercel.app/submit-order";
 const MENU_URL = "https://rai-guest-house-proxy-kkzhkqxan-raiguesthouses-projects.vercel.app/menu";
 
-// showInitialWarning फंक्शन
-// यह फंक्शन वेबसाइट पर एक महत्वपूर्ण सूचना दिखाता है
-// जब यूजर पहली बार वेबसाइट खोलता है तब हह सूचना दिखाई देती है
-// localStorage का उपयोग करके यह चेक किया जाता है कि यूजर ने पहले इस सूचना को देखा है या नहीं
+// showInitialWarning function - modified to never show the warning
 function showInitialWarning() {
-    // localStorage से चेक करें कि यूजर ने पहले सूचना को स्वीकार किया है या नहीं
-    const agreed = localStorage.getItem('warningAgreed');
-    if (!agreed) {
-        // मॉडल एलयड बनाएं जो पूरी स्क्रीन पर दिखेगा
-        const modal = document.createElement('div');
-        
-        // मॉडल का स्टाइल सेट करें - यह पूरी स्क्रीन पर फिक्स्ड रहेगा
-        modal.style.position = 'fixed';
-        modal.style.top = '0';
-        modal.style.left = '0';
-        modal.style.right = '0';
-        modal.style.bottom = '0';
-        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // अर्ध-पारदर्शी काला बैकग्राउंड
-        modal.style.display = 'flex';
-        modal.style.alignItems = 'center';
-        modal.style.justifyContent = 'center';
-        modal.style.zIndex = '99999'; // बह॥त ज्यादा z-index ताकि यह सबसे ऊपर दिखे
-
-        // मॉडल का कंटेंट बॉक्स बनाएं जिसमें सूचना दिखेगी
-        const modalContent = document.createElement('div');
-        modalContent.style.backgroundColor = '#FFFBEB'; // हल्का पीला बैकग्राउंड
-        modalContent.style.padding = '20px';
-        modalContent.style.borderRadius = '8px'; // गोल कोने
-        modalContent.style.maxWidth = '90%';
-        modalContent.style.width = '400px';
-        modalContent.style.margin = '20px';
-        modalContent.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'; // हल्की शैडो
-        modalContent.style.position = 'relative'; // रिलेटिव पोजिशन ताकि अंदर के एलिमेंट्स सही जगह पर रहें
-
-        // मॉडल का HTML कंटेंट सेट करें - शीर्षक, सूचना और बटन
-        modalContent.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0; font-size: 18px; color: #92400E;">जरूरी सूचना / Important Notice</h3>
-                <button id="close-warning" style="border: none; background: none; font-size: 20px; cursor: pointer; color: #92400E; padding: 8px;">✕</button>
-            </div>
-            <div style="margin-bottom: 20px;">
-                <p style="margin: 0 0 10px 0; color: #92400E; font-size: 14px;">कृपया सुनिश्चित करें / Please ensure:</p>
-                <ul style="margin: 0 0 15px 20px; padding: 0; color: #92400E; font-size: 14px;">
-                    <li style="margin-bottom: 5px">वही मोबाइल नंबर डालें जो check-in के समय दिया था</li>
-                    <li style="margin-bottom: 5px">Enter the SAME mobile number you provided during check-in</li>
-                    <li style="margin-bottom: 5px">सही रूम नंबर चुनें</li>
-                    <li style="margin-bottom: 5px">Select your correct room number</li>
-                </ul>
-                <p style="margin: 0; color: #B91C1C; font-weight: 500; font-size: 14px;">
-                    अगर ये details गलत होंगी तो आपका ऑर्डर process नहीं होगा<br>
-                    Your order will NOT be processed if these details don't match
-                </p>
-            </div>
-            <div style="text-align: right;">
-                <button id="accept-warning" style="background-color: #92400E; color: white; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; transition: background-color 0.2s; -webkit-tap-highlight-color: transparent;">
-                    समझ गया / I Understand
-                </button>
-            </div>
-        `;
-
-        // मॉडल को पेज पर जोड़ें
-        modal.appendChild(modalContent);
-        document.body.appendChild(modal);
-
-        // मॉडल को बंद करने के लिए फंक्शन - यह localStorage में सेट करेगा कि यूजर ने सूचना देख ली है
-        const closeModal = () => {
-            modal.remove();
-            localStorage.setItem('warningAgreed', 'true');
-        };
-
-        // बटन्स के लिए वेरिएबल्स बनाएं
-        const closeBtn = document.getElementById('close-warning');
-        const acceptBtn = document.getElementById('accept-warning');
-
-        // क्बोज बटन पर क्लिक और टच इवेंट्स जोड़ें - मोबाइल डिवाइस के लिए महत्वपूर्ण
-        if (closeBtn) {
-            ['click', 'touchend'].forEach(eventType => {
-                closeBtn.addEventListener(eventType, function(e) {
-                    e.preventDefault(); // डिफॉल्ट इवेंट को रोकें
-                    e.stopPropagation(); // इवेंट को आगे बढ़ने से रोकें
-                    closeModal();
-                }, false);
-            });
-        }
-
-        // स्वीकार बटन पर क्लिक और टच इवेंट्स जोड़ें - मोबाइल डिवाइस के लिए महत्वपूर्ण
-        if (acceptBtn) {
-            ['click', 'touchend'].forEach(eventType => {
-                acceptBtn.addEventListener(eventType, function(e) {
-                    e.preventDefault(); // डिफॉल्ट इवेंट को रोकें
-                    e.stopPropagation(); // इवेंट को आगे बढ़ने से रोकें
-                    closeModal();
-                }, false);
-            });
-            
-            // बटन को अधिक आकर्षक बनाएं
-            acceptBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-            
-            // होवर और एक्टिव स्टेट्स जोड़ें - बेहतर यूजर फीडबैक के लिए
-            acceptBtn.addEventListener('mouseover', function() {
-                this.style.backgroundColor = '#B45309'; // होवर पर गहरा रंग
-            });
-            
-            acceptBtn.addEventListener('mouseout', function() {
-                this.style.backgroundColor = '#92400E'; // सामान्त रंग
-            });
-            
-            // टच स्क्रीन के लिए टचस्टार्ट इवेंट
-            acceptBtn.addEventListener('touchstart', function() {
-                this.style.backgroundColor = '#B45309'; // टच पर गहरा रंग
-            });
-        }
-    }
+    // Set the localStorage item to true to prevent the warning from showing
+    localStorage.setItem('warningAgreed', 'true');
+    
+    // Function is now empty - warning will never show
+    return;
 }
 
-// fetchMenu फंक्शन
-// सर्वर से मेनू आइटम्स को फेच करता है
-// अगर कोई एरर आता है तो एरर मैसेज दिखाता है
-// In the fetchMenu function, remove the call to showInitialWarning()
+// fetchMenu function - keeping functionality intact
 async function fetchMenu() {
     try {
-        // Remove this line:
-        // showInitialWarning();
-        
         // Add loading indicator
         const menuDiv = document.getElementById('menu-items');
         if (menuDiv) {
             menuDiv.innerHTML = `
                 <div style="text-align: center; width: 100%; padding: 20px;">
-                    <p style="color: #FFD700; font-size: 18px; margin-bottom: 10px;">Loading menu...</p>
-                    <div style="display: inline-block; width: 50px; height: 50px; border: 5px solid #FFD700; 
+                    <p style="color: #F5E050; font-size: 18px; margin-bottom: 10px; font-family: 'Lora', serif;">Loading menu...</p>
+                    <div style="display: inline-block; width: 50px; height: 50px; border: 5px solid #F5E050; 
                                 border-radius: 50%; border-top-color: transparent; 
                                 animation: spin 1s linear infinite;"></div>
                 </div>
@@ -246,16 +134,16 @@ async function fetchMenu() {
         // Show a more user-friendly message instead of an alert
         if (menuDiv) {
             menuDiv.innerHTML = `
-                <div style="text-align: center; width: 100%; padding: 20px; background: rgba(128, 0, 0, 0.1); border-radius: 8px;">
-                    <p style="color: #FFD700; font-size: 18px; margin-bottom: 10px;">
+                <div style="text-align: center; width: 100%; padding: 20px; background: rgba(10, 26, 47, 0.1); border-radius: 8px;">
+                    <p style="color: #F5E050; font-size: 18px; margin-bottom: 10px; font-family: 'Lora', serif;">
                         <i class="fas fa-wifi" style="margin-right: 8px;"></i>
                         Network connection is slow
                     </p>
-                    <p style="color: #FFD700; font-size: 16px; margin-bottom: 15px;">
+                    <p style="color: #F5E050; font-size: 16px; margin-bottom: 15px; font-family: 'Lora', serif;">
                         Please wait a moment and refresh the page
                     </p>
-                    <button onclick="location.reload()" style="background: #800000; color: #FFD700; border: none; 
-                                                              padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                    <button onclick="location.reload()" style="background: #0A1A2F; color: #F5E050; border: none; 
+                                                              padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: 'Lora', serif;">
                         Refresh Page
                     </button>
                 </div>
@@ -267,32 +155,49 @@ async function fetchMenu() {
     }
 }
 
-// displayMenu फंक्शन
-// मेनू आइटम्स को वेबसाइट पर दिखाता है
-// हर कैटेगरी के लिए अलग सुक्शन बनाता है
-// हर आइटम के साथ Add बटन दिखाता है
-// कैटेगरी का कलर, साइज, स्पेसिंग यहीं से कंट्लो��ol होती है
+// displayMenu function - updated with new design
 function displayMenu(menuItems) {
+    // Add Google Fonts if not already present
+    if (!document.querySelector('link[href*="fonts.googleapis.com"]')) {
+        const fontLink = document.createElement('link');
+        fontLink.href = "https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;500;600&display=swap";
+        fontLink.rel = "stylesheet";
+        document.head.appendChild(fontLink);
+    }
+    
     // Add background style to document body
     if (!document.querySelector('#pageBackground')) {
         const style = document.createElement('style');
         style.id = 'pageBackground';
         style.textContent = `
             body {
-                background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-                          url('./background.jpg') no-repeat center center fixed;
-                -webkit-background-size: cover;
-                -moz-background-size: cover;
-                -o-background-size: cover;
-                background-size: cover;
+                font-family: 'Lora', serif;
+                background: linear-gradient(135deg, #0A1A2F 0%, #1E3A5F 100%);
+                color: #F5E050;
+                margin: 0;
+                padding: 0;
+                overflow-x: hidden;
                 min-height: 100vh;
-                color: white;
+            }
+            
+            h1, h2, h3 {
+                font-family: 'Cinzel', serif;
             }
             
             #menu-items {
                 border-radius: 16px;
                 padding: 20px;
                 margin-top: 20px;
+            }
+            
+            @keyframes velvetShine {
+                0%, 100% { box-shadow: 0 0 10px rgba(245, 224, 80, 0.3); }
+                50% { box-shadow: 0 0 20px rgba(245, 224, 80, 0.5); }
+            }
+            
+            @keyframes glow {
+                from { text-shadow: 0 0 10px #F5E050; }
+                to { text-shadow: 0 0 20px #F5E050, 0 0 30px #F5E050; }
             }
         `;
         document.head.appendChild(style);
@@ -303,8 +208,8 @@ function displayMenu(menuItems) {
     menuDiv.style.maxWidth = '375px';
     menuDiv.style.margin = '20px auto';
     menuDiv.style.padding = '20px 10px';
-    menuDiv.style.background = 'none'; // Remove dark background
-    menuDiv.style.backdropFilter = 'none'; // Remove blur effect
+    menuDiv.style.background = 'none';
+    menuDiv.style.backdropFilter = 'none';
 
     const groupedItems = {};
     menuItems.forEach(item => {
@@ -314,12 +219,12 @@ function displayMenu(menuItems) {
         groupedItems[item.category].push(item);
     });
 
-    // Create a flex container for ovals
+    // Create a flex container for categories
     const categoriesWrapper = document.createElement('div');
     categoriesWrapper.style.cssText = `
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 80px;
         align-items: center;
         width: 100%;
         padding: 10px;
@@ -337,87 +242,65 @@ function displayMenu(menuItems) {
         `;
         
         const headerDiv = document.createElement('div');
-        headerDiv.className = 'cursor-pointer rounded-full flex items-center justify-center';
+        headerDiv.className = 'cursor-pointer category-header';
         headerDiv.style.cssText = `
-            width: 200px;
-            height: 80px;
+            width: 320px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: transform 0.3s ease;
-            background: transparent;
-            border: 2px solid #FFD700;
+            background: linear-gradient(145deg, #0A1A2F, #1E3A5F);
+            border: 2px solid #F5E050;
             border-radius: 40px;
-            box-shadow: 
-                0 0 10px rgba(255, 215, 0, 0.3),
-                0 0 20px rgba(255, 215, 0, 0.2),
-                0 0 30px rgba(255, 215, 0, 0.1);
+            box-shadow: 0 0 10px rgba(245, 224, 80, 0.3);
             position: relative;
             z-index: 1;
+            animation: velvetShine 3s infinite;
         `;
         
         // Text styling update for better visibility
         headerDiv.innerHTML = `
             <div class="text-center p-2">
                 <h2 style="
-                    color: #FFD700;
+                    color: #F5E050;
                     font-size: 1rem;
                     font-weight: 600;
                     line-height: 1.2;
                     margin: 0;
                     word-break: break-word;
-                    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+                    text-shadow: 0 0 10px rgba(245, 224, 80, 0.5);
+                    font-family: 'Cinzel', serif;
                 ">
                     ${category}
                 </h2>
             </div>
         `;
         
-        // Add velvet shine animation
-        if (!document.querySelector('#velvetShineAnimation')) {
-            const style = document.createElement('style');
-            style.id = 'velvetShineAnimation';
-            style.textContent = `
-                @keyframes velvetShine {
-                    0%, 100% { 
-                        filter: brightness(100%) saturate(100%);
-                        box-shadow: 
-                            0 6px 24px rgba(75, 0, 0, 0.6),
-                            inset 0 3px 12px rgba(255, 255, 255, 0.15),
-                            inset 0 -4px 12px rgba(0, 0, 0, 0.4),
-                            0 0 0 2px #800000,
-                            0 0 0 4px #FFD700,
-                            0 0 0 6px #800000,
-                            0 0 2px 6px rgba(128, 0, 0, 0.5),
-                            0 0 4px 6px rgba(128, 0, 0, 0.3)
-                    }
-                    50% { 
-                        filter: brightness(120%) saturate(110%);
-                        box-shadow: 
-                            0 6px 28px rgba(75, 0, 0, 0.7),
-                            inset 0 3px 12px rgba(255, 255, 255, 0.2),
-                            inset 0 -4px 12px rgba(0, 0, 0, 0.5),
-                            0 0 0 2px #800000,
-                            0 0 0 4px #FFD700,
-                            0 0 0 6px #800000,
-                            0 0 3px 6px rgba(128, 0, 0, 0.6),
-                            0 0 5px 6px rgba(128, 0, 0, 0.4);
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-            headerDiv.style.animation = 'velvetShine 3s infinite';
-        }
-    
-        // Content div styling updated
+        // Content div styling updated to match width of header
         const contentDiv = document.createElement('div');
         contentDiv.className = 'hidden mt-4 w-full';
+        contentDiv.style.cssText = `
+            display: none;
+            justify-content: center;
+            width: 100%;
+        `;
         
         const itemsContainer = document.createElement('div');
         itemsContainer.style.cssText = `
-            background: linear-gradient(145deg, #FFD700, #DAA520);
+            background: none;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(218, 165, 32, 0.3);
             overflow: hidden;
+            width: 320px;
+            padding: 10px;
         `;
-        itemsContainer.className = 'divide-y divide-[#B8860B]';
+        itemsContainer.className = 'menu-card';
+        itemsContainer.style.background = 'linear-gradient(145deg, #F5E050, #DAA520);';
+        itemsContainer.boxShadow = '0 4px 12px rgba(218, 165, 32, 0.3);';
+        itemsContainer.overflow = 'hidden;';
+        itemsContainer.width = '320px;';
+        itemsContainer.padding = '10px;';
+        itemsContainer.className = 'menu-card divide-y divide-[#0A1A2F]';
         
         groupedItems[category].forEach(item => {
             const itemDiv = document.createElement('div');
@@ -428,24 +311,145 @@ function displayMenu(menuItems) {
             `;
             
             // Add hover effect through CSS
-            const styleSheet = document.createElement('style');
-            styleSheet.textContent = `
-                .menu-item:hover {
-                    background: rgba(255, 255, 0, 0.15);
-                    box-shadow: 0 0 10px rgba(255, 255, 0, 0.3);
-                }
-            `;
-            document.head.appendChild(styleSheet);
+            if (!document.querySelector('#menuItemHover')) {
+                const styleSheet = document.createElement('style');
+                styleSheet.id = 'menuItemHover';
+                styleSheet.textContent = `
+                    .menu-item {
+                        margin: 22px 0;
+                        border-radius: 12px;
+                        background: transparent;
+                        overflow: hidden;
+                        transition: all 0.3s ease;
+                        border: 1px solid rgba(218, 165, 32, 0.5);
+                        box-shadow: 0 0 8px rgba(218, 165, 32, 0.4);
+                        width: 100%;
+                        max-width: 320px;
+                    }
+                    
+                    .menu-item:hover {
+                        background: rgba(255, 255, 255, 0.1);
+                        box-shadow: 0 0 12px rgba(218, 165, 32, 0.7);
+                        transform: translateY(-2px);
+                        border-color: rgba(218, 165, 32, 0.8);
+                    }
+                    
+                    .category-header {
+                        box-shadow: 0 0 15px rgba(245, 224, 80, 0.5) !important;
+                        transition: all 0.3s ease !important;
+                    }
+                    
+                    .category-header:hover {
+                        box-shadow: 0 0 20px rgba(245, 224, 80, 0.8) !important;
+                        transform: translateY(-3px) !important;
+                    }
+                    
+                    @keyframes goldPulse {
+                        0%, 100% { box-shadow: 0 0 8px rgba(218, 165, 32, 0.4); border-color: rgba(218, 165, 32, 0.5); }
+                        50% { box-shadow: 0 0 12px rgba(218, 165, 32, 0.7); border-color: rgba(218, 165, 32, 0.8); }
+                    }
+                    
+                    .menu-item {
+                        animation: goldPulse 3s infinite;
+                    }
+                    
+                    .add-button {
+                        background-color: #4CAF50 !important;
+                        color: white !important;
+                        border: none;
+                        border-radius: 20px;
+                        padding: 5px 15px;
+                        min-width: 80px;
+                        font-weight: 500;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                    }
+                    
+                    .add-button:hover {
+                        background-color: #45a049 !important;
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                        transform: translateY(-2px);
+                    }
+                    
+                    .item-quantity {
+                        color: #FF0000;
+                        font-weight: bold;
+                        font-size: 1.2rem;
+                        display: inline-block;
+                        margin: 0 5px;
+                    }
+                    
+                    .menu-item-row {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        width: 100%;
+                        padding: 8px;
+                    }
+                    
+                    .dish-name-container {
+                        display: flex;
+                        align-items: center;
+                        flex: 1;
+                    }
+                    
+                    .quantity-controls {
+                        display: flex;
+                        align-items: center;
+                        margin-left: 5px;
+                    }
+                    
+                    .decrement-button {
+                        background-color: #f44336 !important;
+                        color: white !important;
+                        border: none;
+                        border-radius: 50%;
+                        width: 24px;
+                        height: 24px;
+                        font-weight: bold;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                        margin-right: 5px;
+                    }
+                    
+                    .decrement-button:hover {
+                        background-color: #d32f2f !important;
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                    }
+                    
+                    .hidden-control {
+                        visibility: hidden;
+                        opacity: 0;
+                    }
+                `;
+                document.head.appendChild(styleSheet);
+            }
             itemDiv.classList.add('menu-item');
 
+            // Get quantity of this item in cart
+            const cartItem = cart.find(cartItem => cartItem.name === item.name);
+            const quantity = cartItem ? cartItem.quantity : 0;
+            
+            // Create quantity controls with decrement button
+            const decrementClass = quantity > 0 ? 'decrement-button' : 'decrement-button hidden-control';
+            const quantityDisplay = quantity > 0 ? `<span class="item-quantity">(${quantity})</span>` : '';
+
             itemDiv.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <div class="flex-1 flex items-center">
-                        <span class="text-sm font-medium block" style="color: #800000;">${item.name}</span>
+                <div class="menu-item-row">
+                    <div class="dish-name-container">
+                        <span class="text-sm font-medium" style="color: #DAA520; font-family: 'Lora', serif; text-shadow: 0 0 3px rgba(218, 165, 32, 0.3);">${item.name}</span>
+                        <div class="quantity-controls">
+                            <button onclick="removeFromCart('${item.name}', ${item.price})" class="${decrementClass}">-</button>
+                            ${quantityDisplay}
+                        </div>
                     </div>
                     <button onclick="addToCart('${item.name}', ${item.price})" 
-                            class="bg-[#800000] text-[#FFD700] border-none px-3 py-1 rounded-md text-sm 
-                                   hover:bg-[#A00000] hover:text-[#FFFF00] transition-all duration-300">
+                            class="add-button"
+                            style="font-family: 'Lora', serif;">
                         ₹${item.price}
                     </button>
                 </div>
@@ -458,29 +462,34 @@ function displayMenu(menuItems) {
         categoryDiv.appendChild(contentDiv);
         menuDiv.appendChild(categoryDiv);
 
-        // Click handler remains same
+        // Click handler updated to properly toggle visibility
         headerDiv.addEventListener('click', () => {
             document.querySelectorAll('.category-section').forEach(section => {
                 if (section !== categoryDiv) {
-                    section.querySelector('div:nth-child(2)').classList.add('hidden');
-                    section.querySelector('span').style.transform = '';
+                    const content = section.querySelector('div:nth-child(2)');
+                    content.style.display = 'none';
+                    content.classList.add('hidden');
                 }
             });
             
-            contentDiv.classList.toggle('hidden');
-            const arrow = headerDiv.querySelector('span');
-            arrow.style.transform = contentDiv.classList.contains('hidden') ? '' : 'rotate(180deg)';
+            if (contentDiv.classList.contains('hidden')) {
+                contentDiv.style.display = 'flex';
+                contentDiv.classList.remove('hidden');
+            } else {
+                contentDiv.style.display = 'none';
+                contentDiv.classList.add('hidden');
+            }
         });
     });
 }
 
-// Update cart styling too
+// Update cart styling with new design
 function updateCart() {
     const cartDiv = document.getElementById('cart-items');
     cartDiv.innerHTML = '';
     
     if (cart.length === 0) {
-        cartDiv.innerHTML = '<div class="text-base text-white text-center p-3">Your cart is empty</div>';
+        cartDiv.innerHTML = '<div class="text-base text-center p-3" style="font-family: \'Lora\', serif; color: #000000;">Your cart is empty</div>';
     } else {
         cart.forEach(item => {
             const itemDiv = document.createElement('div');
@@ -488,14 +497,15 @@ function updateCart() {
             itemDiv.innerHTML = `
                 <div class="flex justify-between items-center">
                     <div class="flex-1">
-                        <span class="text-base font-bold text-white">${item.name}</span>
+                        <span class="text-base font-bold" style="font-family: 'Lora', serif; color: #000000;">${item.name}</span>
                         <div class="flex items-center mt-1">
-                            <span class="text-sm text-white">Qty: ${item.quantity}</span>
-                            <span class="text-base font-bold text-white ml-2">₹${item.price * item.quantity}</span>
+                            <span class="text-sm" style="font-family: 'Lora', serif; color: #000000;">Qty: ${item.quantity}</span>
+                            <span class="text-base font-bold ml-2" style="font-family: 'Lora', serif; color: #000000;">₹${item.price * item.quantity}</span>
                         </div>
                     </div>
                     <button onclick="removeFromCart('${item.name}', ${item.price})" 
-                            class="text-red-500 text-sm px-2 py-1 hover:bg-red-50 rounded">
+                            class="text-sm px-2 py-1 hover:bg-[#0A1A2F] hover:text-[#F5E050] rounded transition-all duration-300"
+                            style="font-family: 'Lora', serif; color: #000000; border: 1px solid #000000;">
                         Remove
                     </button>
                 </div>
@@ -504,33 +514,24 @@ function updateCart() {
         });
     }
 
-    // Update both total displays with dynamic color
+    // Update both total displays with new design colors
     const totalDiv = document.getElementById('cart-total');
     const floatingTotal = document.getElementById('floating-total');
-    const floatingTotalParent = floatingTotal.parentElement;
     
     if (totalDiv) {
         totalDiv.innerHTML = total;
+        totalDiv.style.fontFamily = "'Lora', serif";
+        totalDiv.style.color = "#000000";
     }
     if (floatingTotal) {
         floatingTotal.innerHTML = total;
-        // Change color based on background
-        const computedStyle = window.getComputedStyle(document.body);
-        const backgroundColor = computedStyle.backgroundColor;
-        
-        if (backgroundColor.includes('rgba(255, 215, 0') || backgroundColor.includes('#FFD700')) {
-            floatingTotalParent.style.color = '#800000'; // Dark maroon text for yellow background
-        } else {
-            floatingTotalParent.style.color = '#FFD700'; // Yellow text for dark background
-        }
+        floatingTotal.parentElement.style.color = '#F5E050';
+        floatingTotal.parentElement.style.textShadow = '0 0 10px #F5E050';
+        floatingTotal.parentElement.style.animation = 'glow 1.5s ease-in-out infinite alternate';
     }
 }
 
-// addToCart फंक्शन
-// जब कोई Add बटन पर क्लिक करता है तो यह फंक्शन चलता है
-// चेक करता है कि आइटम पहले से कार्ट में है या नहीं
-// अगर है तो क्वांटिटी बढ़ाता है, नहीं तो नया आइटम एड करता है
-// टोटल अमाउंट को अपडेट करता है
+// addToCart function - updated to refresh menu display with quantities and decrement button
 function addToCart(name, price) {
     const existingItem = cart.find(item => item.name === name);
     if (existingItem) {
@@ -540,13 +541,42 @@ function addToCart(name, price) {
     }
     total += price;
     updateCart();
+    
+    // Update the menu item display to show updated quantities
+    const menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach(menuItem => {
+        const nameSpan = menuItem.querySelector('.dish-name-container span:first-child');
+        if (nameSpan && nameSpan.textContent === name) {
+            const container = nameSpan.parentElement;
+            const cartItem = cart.find(item => item.name === name);
+            
+            // Get the quantity controls container
+            const quantityControls = container.querySelector('.quantity-controls');
+            if (quantityControls) {
+                // Update decrement button visibility
+                const decrementButton = quantityControls.querySelector('button');
+                if (decrementButton) {
+                    decrementButton.classList.remove('hidden-control');
+                }
+                
+                // Update quantity display
+                let quantitySpan = quantityControls.querySelector('.item-quantity');
+                if (!quantitySpan && cartItem && cartItem.quantity > 0) {
+                    // Create quantity span if it doesn't exist
+                    quantitySpan = document.createElement('span');
+                    quantitySpan.className = 'item-quantity';
+                    quantityControls.appendChild(quantitySpan);
+                }
+                
+                if (quantitySpan && cartItem) {
+                    quantitySpan.textContent = `(${cartItem.quantity})`;
+                }
+            }
+        }
+    });
 }
 
-// removeFromCart फंक्शन
-// Remove बटन पर क्��clिक करने पर चलता है
-// आइटम की क्वांटिटी कम करता है
-// अगर क्वांटिटी 0 हो जाती है तो आइटम को कार्ट से हटा देता है
-// ���������� अमाउंट को अपडेट करता है
+// removeFromCart function - updated to refresh menu display with quantities and decrement button
 function removeFromCart(name, price) {
     const item = cart.find(item => item.name === name);
     if (item) {
@@ -556,17 +586,42 @@ function removeFromCart(name, price) {
             cart = cart.filter(i => i.name !== name);
         }
         updateCart();
+        
+        // Update the menu item display to show updated quantities
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(menuItem => {
+            const nameSpan = menuItem.querySelector('.dish-name-container span:first-child');
+            if (nameSpan && nameSpan.textContent === name) {
+                const container = nameSpan.parentElement;
+                const cartItem = cart.find(item => item.name === name);
+                
+                // Get the quantity controls container
+                const quantityControls = container.querySelector('.quantity-controls');
+                if (quantityControls) {
+                    // Update decrement button visibility
+                    const decrementButton = quantityControls.querySelector('button');
+                    if (decrementButton) {
+                        if (!cartItem || cartItem.quantity === 0) {
+                            decrementButton.classList.add('hidden-control');
+                        }
+                    }
+                    
+                    // Update quantity display
+                    const quantitySpan = quantityControls.querySelector('.item-quantity');
+                    if (quantitySpan) {
+                        if (cartItem && cartItem.quantity > 0) {
+                            quantitySpan.textContent = `(${cartItem.quantity})`;
+                        } else {
+                            quantitySpan.textContent = '';
+                        }
+                    }
+                }
+            }
+        });
     }
 }
 
-// submitOrder फंक्शन
-// ऑर्डर बटन पर क्��clिक करने पर चलता है
-// चेक करता है:
-// - कार्ट खाली तो नहीं
-// - रूम नंबर और मोबाइल नंबर भरे गए हैं या नहीं
-// - टर्स एक्सेप्ट किए गए हैं या नहीं
-// सब ठीक होने पर ऑर्डर को सर्वर पर भेजता है
-// सक्सेस या एरर मैसेज दिखाता है
+// submitOrder function - keeping functionality intact
 async function submitOrder() {
     if (cart.length === 0) {
         alert('कृपया कुछ आइटम्स ऑर्डर करें');
@@ -623,137 +678,202 @@ async function submitOrder() {
     }
 }
 
-// इवेंट लिसनर
-// ऑर्डर बटन पर क्��clिक इवेंट को सुनता है
-// क्��clिक होने पर submitOrder फंक्शन को कॉल करता है
-// Make sure DOM is loaded before adding event listener
+// Event listener for order button
 document.addEventListener('DOMContentLoaded', function() {
-    // Fix: Check for both possible button IDs
-    const submitButton = document.getElementById('submit-order') || document.querySelector('button:contains("Place Order")');
+    // Show initial warning
+    showInitialWarning();
     
-    // If button still not found, try to find by text content
-    if (!submitButton) {
+    // Fetch menu
+    fetchMenu();
+    
+    // Style the "Places to Visit" button
+    setTimeout(styleVisitButton, 1000);
+    
+    // Style form inputs
+    styleFormInputs();
+    
+    // Attach event to submit button
+    const submitButton = document.getElementById('submit-order');
+    if (submitButton) {
+        submitButton.addEventListener('click', submitOrder);
+    } else {
+        // If button not found by ID, try to find by text content
         const allButtons = document.querySelectorAll('button');
         for (let btn of allButtons) {
             if (btn.textContent.trim().includes('Place Order')) {
-                btn.id = 'submit-order'; // Add ID to the button
+                btn.id = 'submit-order';
                 btn.addEventListener('click', submitOrder);
-                console.log('Found and attached event to Place Order button');
                 break;
             }
         }
-    } else {
-        submitButton.addEventListener('click', submitOrder);
-        console.log('Event attached to submit-order button');
     }
 });
 
-// वेबसाइट लोड होते ही fetchMenu फंक्शन को कॉल करता है
-// इससे मेनू आइटम्स तुरंत लोड हो जाते हैं
-fetchMenu();
-
-
-// Replace with just
-document.addEventListener('DOMContentLoaded', fetchMenu);
-
-// Add this function after the displayMenu function
+// Style the "Places to Visit" button
 function styleVisitButton() {
-    // "Places to visit in Ujjain" बटन को स्टाइल करने के लिए फंक्शन
-    // इस फंक्शन का उद्देश्य है सभी लिंक्स को ढूंढना और उन्हें स्टाइल करना
     const visitLinks = document.querySelectorAll('a');
     
     visitLinks.forEach(link => {
         if (link.textContent.includes('Places to visit in Ujjain') || 
             link.textContent.includes('Places to Visit in Ujjain')) {
             
-            // पुराने लिंक की जगह नया बटन बनाना
-            // यह पुराने टेक्स्अड को हटाकर स्टाइल किया हुआ बटन दिखाएगा
-            const button = document.createElement('a');
-            button.href = link.href;
-            button.textContent = 'Places to Visit in Ujjain'; // बटन पर दिखने वाला टेक्स्अड - इसे बदल सकते हैं
-            button.target = '_blank'; // नए टैब में खुलेगा - इसे '_self' में बदल सकते हैं अगर उसी टैब में खोलना है
+            // Skip if link already has the places-button class
+            if (link.classList.contains('places-button')) return;
             
-            // बटन का स्टाइल - इन सभी प्रॉपर्टीज को अपने हिसाब से बदल सकते हैं
-            button.style.display = 'inline-block';
-            button.style.backgroundColor = '#800000'; // बटन का बैकग्राउंड कलर - मरून कलर है, इसे बदल सकते हैं
-            button.style.color = '#FFD700'; // बटन का टेक्स्अड कलर - गोल्डन कलर है, इसे बदल सकते हैं
-            button.style.padding = '8px 16px'; // बटन का पैडिंग - इसे बढ़ा या घटा सकते हैं
-            button.style.borderRadius = '8px'; // बटन के कोनों का गोलापन - इसे बदल सकते हैं
-            button.style.textDecoration = 'none'; // अंडरलाइन हटाने के लिए
-            button.style.fontWeight = 'bold'; // टेक्स्अड को बोल्ड करने के लिए
-            button.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)'; // बटन की शैडो - इसे बदल सकते हैं
-            button.style.margin = '10px 0'; // बटन के चारों ओर स्पेस
-            button.style.transition = 'all 0.3s ease'; // एनिमेशन इफेक्ट के लिए
-            button.style.fontSize = '14px'; // फॉन्ट साइज - इसे बदल सकते हैं
-            button.style.textAlign = 'center'; // टेक्स्अलाइनमेंट
-            button.style.width = 'auto'; // बटन की चौड़ाई
+            // Apply the new styling directly to the existing link
+            link.className = 'places-button';
+            link.style.background = 'linear-gradient(45deg, #0A1A2F, #F5E050)';
+            link.style.color = '#FFFFFF';
+            link.style.padding = '10px 20px';
+            link.style.borderRadius = '8px';
+            link.style.fontWeight = 'bold';
+            link.style.textAlign = 'center';
+            link.style.margin = '0 auto 20px auto';
+            link.style.display = 'block';
+            link.style.maxWidth = '300px';
+            link.style.boxShadow = '0 0 10px rgba(245, 224, 80, 0.5)';
+            link.style.transition = 'all 0.3s ease';
+            link.style.textDecoration = 'none';
+            link.style.fontFamily = "'Lora', serif";
             
-            // होवर इफेक्ट - जब माउस बटन पर जाए तो क्या होगा
-            // इन प्रॉपर्टीज को भी अपने हिसाब से बदल सकते हैं
-            button.onmouseover = function() {
-                this.style.backgroundColor = '#A00000'; // होवर पर बैकग्राउंड कलर - इसे बदल सकते हैं
-                this.style.transform = 'translateY(-2px)'; // होवर पर बटन थोड़ा ऊपर उठेगा
-                this.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.4)'; // होवर पर शैडो बड़ी होगी
+            // Add hover effects
+            link.onmouseover = function() {
+                this.style.background = 'linear-gradient(45deg, #F5E050, #0A1A2F)';
+                this.style.boxShadow = '0 0 15px rgba(245, 224, 80, 0.8)';
+                this.style.transform = 'translateY(-2px)';
             };
             
-            // माउस टाने पर बटन वापस नॉर्मल हो जाएगा
-            button.onmouseout = function() {
-                this.style.backgroundColor = '#800000'; // नॉर्मल बैकग्राउंड कलर
-                this.style.transform = 'translateY(0)'; // नॉर्मल पोजीशन
-                this.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)'; // नॉर्मल शैडो
+            link.onmouseout = function() {
+                this.style.background = 'linear-gradient(45deg, #0A1A2F, #F5E050)';
+                this.style.boxShadow = '0 0 10px rgba(245, 224, 80, 0.5)';
+                this.style.transform = 'translateY(0)';
             };
-            
-            // पुराने लिंक को नए बटन से रिप्लेस करना
-            // यह लाइन सबसे महत्वपूर्ण है - यह पुराने टेक्स्अड को हटाकर नया बटन दिखाएगी
-            link.parentNode.replaceChild(button, link);
         }
     });
 }
 
-// DOMContentLoaded इवेंट पर इस फंक्शन को कॉल करना
-// यह सुनिश्चित करता है कि पेज लोड होने के बाद ही बटन स्टाइल हो
-document.addEventListener('DOMContentLoaded', () => {
-    fetchMenu();
-    
-    // थोड़ा डिले देना ताकि सभी एलिमेंट्स लोड हो जाएं
-    // अगर बटन तुरंत नहीं दिखता है तो इस टाइम को बढ़ा सकते हैं (जैसे 2000 या 3000)
-    setTimeout(styleVisitButton, 1000);
-    
-    // Style the input fields for room number and mobile number
+// Style form inputs
+function styleFormInputs() {
     const roomNumberInput = document.getElementById('room-number');
     const mobileNumberInput = document.getElementById('mobile-number');
+    const termsCheckbox = document.getElementById('terms-checkbox');
+    const submitButton = document.getElementById('submit-order');
     
-    if (roomNumberInput) {
-        roomNumberInput.style.backgroundColor = '#FFFBEB'; // Light golden background
-        roomNumberInput.style.borderColor = '#FFD700'; // Golden border
-        roomNumberInput.style.color = '#800000'; // Maroon text
-        roomNumberInput.style.boxShadow = '0 0 5px rgba(255, 215, 0, 0.3)'; // Subtle golden glow
-    }
-    
-    if (mobileNumberInput) {
-        mobileNumberInput.style.backgroundColor = '#FFFBEB'; // Light golden background
-        mobileNumberInput.style.borderColor = '#FFD700'; // Golden border
-        mobileNumberInput.style.color = '#800000'; // Maroon text
-        mobileNumberInput.style.boxShadow = '0 0 5px rgba(255, 215, 0, 0.3)'; // Subtle golden glow
-    }
-    
-    // Add focus effect for better user experience
-    const styleInputs = (input) => {
+    // Style select and input fields
+    [roomNumberInput, mobileNumberInput].forEach(input => {
         if (!input) return;
         
+        input.className = 'input-field w-full';
+        input.style.background = '#F8F7F2';
+        input.style.border = '2px solid #F5E050';
+        input.style.borderRadius = '8px';
+        input.style.padding = '10px';
+        input.style.color = '#0A1A2F';
+        input.style.transition = 'border-color 0.3s ease, box-shadow 0.3s ease';
+        input.style.fontFamily = "'Lora', serif";
+        
+        // Add focus effects
         input.addEventListener('focus', () => {
-            input.style.backgroundColor = '#FFF8E1'; // Slightly different color on focus
-            input.style.boxShadow = '0 0 8px rgba(255, 215, 0, 0.5)'; // Enhanced glow on focus
-            input.style.borderColor = '#DAA520'; // Darker gold on focus
+            input.style.borderColor = '#DAA520';
+            input.style.boxShadow = '0 0 8px rgba(245, 224, 80, 0.5)';
         });
         
         input.addEventListener('blur', () => {
-            input.style.backgroundColor = '#FFFBEB'; // Back to original color
-            input.style.boxShadow = '0 0 5px rgba(255, 215, 0, 0.3)'; // Back to original shadow
-            input.style.borderColor = '#FFD700'; // Back to original border
+            input.style.borderColor = '#F5E050';
+            input.style.boxShadow = 'none';
         });
-    };
+    });
     
-    styleInputs(roomNumberInput);
-    styleInputs(mobileNumberInput);
+    // Style submit button
+    if (submitButton) {
+        submitButton.className = 'w-full order-button';
+        submitButton.style.background = '#0A1A2F';
+        submitButton.style.color = '#F5E050';
+        submitButton.style.border = 'none';
+        submitButton.style.borderRadius = '8px';
+        submitButton.style.padding = '12px';
+        submitButton.style.fontSize = '16px';
+        submitButton.style.fontWeight = '600';
+        submitButton.style.transition = 'background 0.3s ease, color 0.3s ease';
+        submitButton.style.fontFamily = "'Lora', serif";
+        
+        // Add hover effects
+        submitButton.addEventListener('mouseover', function() {
+            this.style.background = '#F5E050';
+            this.style.color = '#0A1A2F';
+        });
+        
+        submitButton.addEventListener('mouseout', function() {
+            this.style.background = '#0A1A2F';
+            this.style.color = '#F5E050';
+        });
+    }
+    
+    // Style floating cart
+    const floatingCart = document.querySelector('.floating-cart');
+    if (floatingCart) {
+        floatingCart.style.background = '#0A1A2F';
+        floatingCart.style.border = '3px solid #F5E050';
+        floatingCart.style.boxShadow = '0 0 15px rgba(245, 224, 80, 0.4)';
+    }
+}
+
+// Add a function to apply the new fonts to the entire page
+function applyFonts() {
+    // Add Google Fonts if not already present
+    if (!document.querySelector('link[href*="fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;500;600"]')) {
+        const fontLink = document.createElement('link');
+        fontLink.href = "https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;500;600&display=swap";
+        fontLink.rel = "stylesheet";
+        document.head.appendChild(fontLink);
+    }
+    
+    // Apply fonts to elements
+    const style = document.createElement('style');
+    style.textContent = `
+        body, p, span, div, button, input, select, textarea {
+            font-family: 'Lora', serif;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Cinzel', serif;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Add a function to apply the new background to the page
+function applyBackground() {
+    const style = document.createElement('style');
+    style.textContent = `
+        body {
+            font-family: 'Lora', serif;
+            background: linear-gradient(135deg, #0A1A2F 0%, #1E3A5F 100%);
+            color: #F5E050;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Show initial warning
+    showInitialWarning();
+    
+    // Fetch menu
+    fetchMenu();
+    
+    // Style the "Places to Visit" button
+    setTimeout(styleVisitButton, 1000);
+    
+    // Style form inputs
+    styleFormInputs();
+    
+    // Apply fonts and background
+    applyFonts();
+    applyBackground();
 });
