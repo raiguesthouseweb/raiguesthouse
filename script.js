@@ -105,87 +105,117 @@ function showInitialWarning() {
 async function fetchMenu() {
     try {
         showInitialWarning();
-        const response = await fetch(MENU_URL, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const menuItems = await response.json();
-
-        // Validate response data
-        if (menuItems.error) {
-            throw new Error(menuItems.error + (menuItems.details ? `: ${menuItems.details}` : ''));
-        }
-
-        if (!Array.isArray(menuItems)) {
-            throw new Error('Menu items is not an array');
-        }
-
-        displayMenu(menuItems);
         
-        // Add form styling to make input fields more visible
-        if (!document.querySelector('#formFieldsStyle')) {
-            const formStyle = document.createElement('style');
-            formStyle.id = 'formFieldsStyle';
-            formStyle.textContent = `
-                #room-number, #mobile-number {
-                    background-color: white !important;
-                    color: black !important;
-                    font-weight: bold !important;
-                    font-size: 16px !important;
-                    border: 2px solid #FFD700 !important;
-                    padding: 10px !important;
-                    border-radius: 8px !important;
-                    width: 100% !important;
-                    margin-bottom: 15px !important;
-                }
-                
-                #room-number::placeholder, #mobile-number::placeholder {
-                    color: #666 !important;
-                    opacity: 1 !important;
-                }
-                
-                label[for="room-number"], label[for="mobile-number"] {
-                    color: #FFD700 !important;
-                    font-size: 18px !important;
-                    font-weight: bold !important;
-                    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
-                    margin-bottom: 5px !important;
-                    display: block !important;
-                }
-                
-                .warning-note {
-                    background-color: rgba(128, 0, 0, 0.7) !important;
-                    border: 2px solid #FFD700 !important;
-                }
-                
-                #terms-checkbox {
-                    width: 20px !important;
-                    height: 20px !important;
-                }
-                
-                label[for="terms-checkbox"] {
-                    color: #FFD700 !important;
-                    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
-                }
-                
-                h2, p.text-lg.font-semibold {
-                    color: #FFD700 !important;
-                    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important;
-                }
+        // Add loading indicator
+        const menuDiv = document.getElementById('menu-items');
+        if (menuDiv) {
+            menuDiv.innerHTML = `
+                <div style="text-align: center; width: 100%; padding: 20px;">
+                    <p style="color: #FFD700; font-size: 18px; margin-bottom: 10px;">Loading menu...</p>
+                    <div style="display: inline-block; width: 50px; height: 50px; border: 5px solid #FFD700; 
+                                border-radius: 50%; border-top-color: transparent; 
+                                animation: spin 1s linear infinite;"></div>
+                </div>
             `;
-            document.head.appendChild(formStyle);
+            
+            // Add the spinner animation
+            if (!document.querySelector('#spinnerAnimation')) {
+                const style = document.createElement('style');
+                style.id = 'spinnerAnimation';
+                style.textContent = `
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // Add a timeout to prevent quick error messages
+        const fetchWithTimeout = async (url, options, timeout = 10000) => {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    signal: controller.signal
+                });
+                clearTimeout(id);
+                return response;
+            } catch (error) {
+                clearTimeout(id);
+                throw error;
+            }
+        };
+        
+        // Try up to 3 times with increasing delays
+        let attempts = 0;
+        let error;
+        
+        while (attempts < 3) {
+            try {
+                const response = await fetchWithTimeout(MENU_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                }, 15000); // 15 second timeout
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const menuItems = await response.json();
+                
+                // Validate response data
+                if (menuItems.error) {
+                    throw new Error(menuItems.error + (menuItems.details ? `: ${menuItems.details}` : ''));
+                }
+                
+                if (!Array.isArray(menuItems)) {
+                    throw new Error('Menu items is not an array');
+                }
+                
+                displayMenu(menuItems);
+                return; // Success, exit the function
+            } catch (e) {
+                error = e;
+                attempts++;
+                
+                // Wait longer between each retry
+                if (attempts < 3) {
+                    await new Promise(resolve => setTimeout(resolve, attempts * 2000));
+                }
+            }
+        }
+        
+        // If we get here, all attempts failed
+        console.error('Error fetching menu after multiple attempts:', error);
+        
+        // Show a more user-friendly message instead of an alert
+        if (menuDiv) {
+            menuDiv.innerHTML = `
+                <div style="text-align: center; width: 100%; padding: 20px; background: rgba(128, 0, 0, 0.1); border-radius: 8px;">
+                    <p style="color: #FFD700; font-size: 18px; margin-bottom: 10px;">
+                        <i class="fas fa-wifi" style="margin-right: 8px;"></i>
+                        Network connection is slow
+                    </p>
+                    <p style="color: #FFD700; font-size: 16px; margin-bottom: 15px;">
+                        Please wait a moment and refresh the page
+                    </p>
+                    <button onclick="location.reload()" style="background: #800000; color: #FFD700; border: none; 
+                                                              padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                        Refresh Page
+                    </button>
+                </div>
+            `;
         }
     } catch (error) {
-        console.error('Error fetching menu:', error);
-        alert('Failed to load menu: ' + error.message);
+        console.error('Error in fetchMenu function:', error);
+        // Don't show alert, just log to console
     }
 }
 
