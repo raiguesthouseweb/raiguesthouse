@@ -27,7 +27,7 @@ let cart = [];
 let total = 0;
 
 // API endpoints for order submission and menu fetching
-const API_URL = "https://raiguesthouse-orujgkxvc-raiguesthouses-projects-f2380489.vercel.app/submit-order";
+const API_URL = "https://raiguesthouse-orujgkxvc-raiguesthouses-projects-kkzhkqxan.vercel.app/submit-order";
 const MENU_URL = "https://rai-guest-house-proxy-kkzhkqxan-raiguesthouses-projects.vercel.app/menu";
 
 // showInitialWarning function - modified to never show the warning
@@ -621,7 +621,7 @@ function removeFromCart(name, price) {
     }
 }
 
-// submitOrder function - keeping functionality intact
+// submitOrder function - fixing the implementation
 async function submitOrder() {
     if (cart.length === 0) {
         alert('कृपया कुछ आइटम्स ऑर्डर करें');
@@ -645,6 +645,11 @@ async function submitOrder() {
         return;
     }
 
+    if (!termsAccepted) {
+        alert('Please accept the terms and conditions');
+        return;
+    }
+
     const orderData = {
         cart: cart,
         total: total,
@@ -655,6 +660,10 @@ async function submitOrder() {
     try {
         console.log('Submitting order with data:', orderData);
 
+        // Send email notification first
+        sendOrderEmail(orderData);
+
+        // Then submit order to API
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -676,6 +685,32 @@ async function submitOrder() {
         console.error('Error submitting order:', error);
         alert('Error placing order: ' + error.message);
     }
+}
+
+// Add this function to send email notifications
+function sendOrderEmail(orderDetails) {
+    // Format order items for email
+    let itemsList = '';
+    orderDetails.cart.forEach(item => {
+        itemsList += `${item.name} x ${item.quantity} - ₹${item.price * item.quantity}\n`;
+    });
+    
+    // Prepare template parameters
+    const templateParams = {
+        room_number: orderDetails.roomNumber,
+        mobile_number: orderDetails.mobileNumber,
+        order_items: itemsList,
+        order_total: orderDetails.total,
+        order_time: new Date().toLocaleString()
+    };
+    
+    // Send email using EmailJS
+    emailjs.send("service_0k0kvk8", "template_2cy2428", templateParams)
+        .then(function(response) {
+            console.log('Email sent successfully!', response.status, response.text);
+        }, function(error) {
+            console.error('Failed to send email:', error);
+        });
 }
 
 // Event listener for order button
