@@ -1,0 +1,74 @@
+/* Windows XP style quantity controls */
+.menu-item {
+    background-color: #F5F5F5;
+    border: 1px solid #D4D0C8;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-item-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.menu-item-name {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.menu-item-price {
+    font-size: 12px;
+    color: #555;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    min-width: 100px;
+    justify-content: flex-end;
+}
+
+.quantity-btn {
+    background: linear-gradient(to bottom, #FDFDFD 0%, #F6F6F6 50%, #E8E8E8 100%);
+    border: 1px solid #999;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.quantity-btn:hover {
+    background: linear-gradient(to bottom, #F6F6F6 0%, #E8E8E8 50%, #DCDCDC 100%);
+}
+
+.quantity-display {
+    margin: 0 5px;
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+}
+
+.add-button {
+    background: linear-gradient(to bottom, #FDFDFD 0%, #F6F6F6 50%, #E8E8E8 100%);
+    border: 1px solid #999;
+    border-radius: 4px;
+    padding: 3px 10px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.add-button:hover {
+    background: linear-gradient(to bottom, #F6F6F6 0%, #E8E8E8 50%, #DCDCDC 100%);
+}
