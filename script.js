@@ -19,198 +19,165 @@ window.addEventListener('scroll', function() {
 });
 
 // Initialize empty cart array to store selected items
-// Each item will have: name, price, and quantity
 let cart = [];
 
 // Initialize total amount to 0
-// This will be updated as items are added/removed
 let total = 0;
 
 // API endpoints for order submission and menu fetching
 const API_URL = "https://raiguesthouse-orujgkxvc-raiguesthouses-projects-f2380489.vercel.app/submit-order";
 const MENU_URL = "https://rai-guest-house-proxy-kkzhkqxan-raiguesthouses-projects.vercel.app/menu";
 
-// showInitialWarning function - modified to never show the warning
-function showInitialWarning() {
-    // Set the localStorage item to true to prevent the warning from showing
-    localStorage.setItem('warningAgreed', 'true');
-    
-    // Function is now empty - warning will never show
-    return;
+// Windows XP UI functions
+function toggleStartMenu() {
+    const startMenu = document.getElementById('start-menu');
+    if (startMenu.style.display === 'block') {
+        startMenu.style.display = 'none';
+    } else {
+        startMenu.style.display = 'block';
+    }
 }
 
-// fetchMenu function - keeping functionality intact
+function openWindow(windowId) {
+    // Close start menu if open
+    document.getElementById('start-menu').style.display = 'none';
+    
+    // Show the window
+    const window = document.getElementById(windowId);
+    window.style.display = 'block';
+    
+    // Center the window
+    centerWindow(window);
+    
+    // Bring to front
+    window.style.zIndex = getHighestZIndex() + 1;
+}
+
+function closeWindow(windowId) {
+    document.getElementById(windowId).style.display = 'none';
+}
+
+function centerWindow(windowElement) {
+    const windowWidth = windowElement.offsetWidth;
+    const windowHeight = windowElement.offsetHeight;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    
+    windowElement.style.left = (screenWidth - windowWidth) / 2 + 'px';
+    windowElement.style.top = (screenHeight - windowHeight) / 2 + 'px';
+}
+
+function getHighestZIndex() {
+    const windows = document.querySelectorAll('.window');
+    let highest = 100;
+    
+    windows.forEach(window => {
+        const zIndex = parseInt(window.style.zIndex || 100);
+        if (zIndex > highest) {
+            highest = zIndex;
+        }
+    });
+    
+    return highest;
+}
+
+function toggleCart() {
+    const cartWindow = document.getElementById('cart-window');
+    if (cartWindow.style.display === 'block') {
+        cartWindow.style.display = 'none';
+    } else {
+        cartWindow.style.display = 'block';
+        cartWindow.style.zIndex = getHighestZIndex() + 1;
+    }
+}
+
+// Make windows draggable
+document.addEventListener('DOMContentLoaded', function() {
+    const windows = document.querySelectorAll('.window');
+    
+    windows.forEach(window => {
+        const header = window.querySelector('.window-header');
+        
+        let isDragging = false;
+        let offsetX, offsetY;
+        
+        header.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            offsetX = e.clientX - window.getBoundingClientRect().left;
+            offsetY = e.clientY - window.getBoundingClientRect().top;
+            window.style.zIndex = getHighestZIndex() + 1;
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+            
+            window.style.left = (e.clientX - offsetX) + 'px';
+            window.style.top = (e.clientY - offsetY) + 'px';
+        });
+        
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+    });
+    
+    // Start button event
+    document.getElementById('start-button').addEventListener('click', toggleStartMenu);
+    
+    // Desktop icon event
+    document.getElementById('menu-icon').addEventListener('click', function() {
+        openWindow('menu-window');
+    });
+    
+    // Close start menu when clicking elsewhere
+    document.addEventListener('click', function(e) {
+        const startMenu = document.getElementById('start-menu');
+        const startButton = document.getElementById('start-button');
+        
+        if (startMenu.style.display === 'block' && 
+            !startMenu.contains(e.target) && 
+            !startButton.contains(e.target)) {
+            startMenu.style.display = 'none';
+        }
+    });
+    
+    // Submit order button
+    document.getElementById('submit-order').addEventListener('click', submitOrder);
+    
+    // Fetch menu
+    fetchMenu();
+});
+
+// fetchMenu function - modified for Windows XP style
 async function fetchMenu() {
     try {
-        // Add loading indicator
-        const menuDiv = document.getElementById('menu-items');
-        if (menuDiv) {
-            menuDiv.innerHTML = `
-                <div style="text-align: center; width: 100%; padding: 20px;">
-                    <p style="color: #F5E050; font-size: 18px; margin-bottom: 10px; font-family: 'Lora', serif;">Loading menu...</p>
-                    <div style="display: inline-block; width: 50px; height: 50px; border: 5px solid #F5E050; 
-                                border-radius: 50%; border-top-color: transparent; 
-                                animation: spin 1s linear infinite;"></div>
-                </div>
-            `;
-            
-            // Add the spinner animation
-            if (!document.querySelector('#spinnerAnimation')) {
-                const style = document.createElement('style');
-                style.id = 'spinnerAnimation';
-                style.textContent = `
-                    @keyframes spin {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
+        const response = await fetch(MENU_URL);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
         
-        // Add a timeout to prevent quick error messages
-        const fetchWithTimeout = async (url, options, timeout = 10000) => {
-            const controller = new AbortController();
-            const id = setTimeout(() => controller.abort(), timeout);
-            
-            try {
-                const response = await fetch(url, {
-                    ...options,
-                    signal: controller.signal
-                });
-                clearTimeout(id);
-                return response;
-            } catch (error) {
-                clearTimeout(id);
-                throw error;
-            }
-        };
+        const menuItems = await response.json();
         
-        // Try up to 3 times with increasing delays
-        let attempts = 0;
-        let error;
-        
-        while (attempts < 3) {
-            try {
-                const response = await fetchWithTimeout(MENU_URL, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                }, 15000); // 15 second timeout
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                
-                const menuItems = await response.json();
-                
-                // Validate response data
-                if (menuItems.error) {
-                    throw new Error(menuItems.error + (menuItems.details ? `: ${menuItems.details}` : ''));
-                }
-                
-                if (!Array.isArray(menuItems)) {
-                    throw new Error('Menu items is not an array');
-                }
-                
-                displayMenu(menuItems);
-                return; // Success, exit the function
-            } catch (e) {
-                error = e;
-                attempts++;
-                
-                // Wait longer between each retry
-                if (attempts < 3) {
-                    await new Promise(resolve => setTimeout(resolve, attempts * 2000));
-                }
-            }
+        if (!Array.isArray(menuItems)) {
+            throw new Error('Menu items is not an array');
         }
         
-        // If we get here, all attempts failed
-        console.error('Error fetching menu after multiple attempts:', error);
-        
-        // Show a more user-friendly message instead of an alert
-        if (menuDiv) {
-            menuDiv.innerHTML = `
-                <div style="text-align: center; width: 100%; padding: 20px; background: rgba(10, 26, 47, 0.1); border-radius: 8px;">
-                    <p style="color: #F5E050; font-size: 18px; margin-bottom: 10px; font-family: 'Lora', serif;">
-                        <i class="fas fa-wifi" style="margin-right: 8px;"></i>
-                        Network connection is slow
-                    </p>
-                    <p style="color: #F5E050; font-size: 16px; margin-bottom: 15px; font-family: 'Lora', serif;">
-                        Please wait a moment and refresh the page
-                    </p>
-                    <button onclick="location.reload()" style="background: #0A1A2F; color: #F5E050; border: none; 
-                                                              padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: 'Lora', serif;">
-                        Refresh Page
-                    </button>
-                </div>
-            `;
-        }
+        displayMenuCategories(menuItems);
     } catch (error) {
-        console.error('Error in fetchMenu function:', error);
-        // Don't show alert, just log to console
+        console.error('Error fetching menu:', error);
+        document.getElementById('menu-categories').innerHTML = `
+            <div style="text-align: center; width: 100%; padding: 20px;">
+                <p style="color: red; font-size: 14px;">Error loading menu. Please try again later.</p>
+            </div>
+        `;
     }
 }
 
-// displayMenu function - updated with new design
-function displayMenu(menuItems) {
-    // Add Google Fonts if not already present
-    if (!document.querySelector('link[href*="fonts.googleapis.com"]')) {
-        const fontLink = document.createElement('link');
-        fontLink.href = "https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;500;600&display=swap";
-        fontLink.rel = "stylesheet";
-        document.head.appendChild(fontLink);
-    }
+// Display menu categories as folders
+function displayMenuCategories(menuItems) {
+    const categoriesDiv = document.getElementById('menu-categories');
+    categoriesDiv.innerHTML = '';
     
-    // Add background style to document body
-    if (!document.querySelector('#pageBackground')) {
-        const style = document.createElement('style');
-        style.id = 'pageBackground';
-        style.textContent = `
-            body {
-                font-family: 'Lora', serif;
-                background: linear-gradient(135deg, #0A1A2F 0%, #1E3A5F 100%);
-                color: #F5E050;
-                margin: 0;
-                padding: 0;
-                overflow-x: hidden;
-                min-height: 100vh;
-            }
-            
-            h1, h2, h3 {
-                font-family: 'Cinzel', serif;
-            }
-            
-            #menu-items {
-                border-radius: 16px;
-                padding: 20px;
-                margin-top: 20px;
-            }
-            
-            @keyframes velvetShine {
-                0%, 100% { box-shadow: 0 0 10px rgba(245, 224, 80, 0.3); }
-                50% { box-shadow: 0 0 20px rgba(245, 224, 80, 0.5); }
-            }
-            
-            @keyframes glow {
-                from { text-shadow: 0 0 10px #F5E050; }
-                to { text-shadow: 0 0 20px #F5E050, 0 0 30px #F5E050; }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
-    const menuDiv = document.getElementById('menu-items');
-    menuDiv.innerHTML = '';
-    menuDiv.style.maxWidth = '375px';
-    menuDiv.style.margin = '20px auto';
-    menuDiv.style.padding = '20px 10px';
-    menuDiv.style.background = 'none';
-    menuDiv.style.backdropFilter = 'none';
-
+    // Group items by category
     const groupedItems = {};
     menuItems.forEach(item => {
         if (!groupedItems[item.category]) {
@@ -218,320 +185,57 @@ function displayMenu(menuItems) {
         }
         groupedItems[item.category].push(item);
     });
-
-    // Create a flex container for categories
-    const categoriesWrapper = document.createElement('div');
-    categoriesWrapper.style.cssText = `
-        display: flex;
-        flex-direction: column;
-        gap: 80px;
-        align-items: center;
-        width: 100%;
-        padding: 10px;
-    `;
-    menuDiv.appendChild(categoriesWrapper);
-
+    
+    // Create folder for each category
     Object.keys(groupedItems).forEach(category => {
-        const categoryDiv = document.createElement('div');
-        categoryDiv.className = 'category-section';
-        categoryDiv.style.cssText = `
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        const folderDiv = document.createElement('div');
+        folderDiv.className = 'folder-item';
+        folderDiv.innerHTML = `
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_closed-4.png" alt="${category}">
+            <span>${category}</span>
         `;
         
-        const headerDiv = document.createElement('div');
-        headerDiv.className = 'cursor-pointer category-header';
-        headerDiv.style.cssText = `
-            width: 320px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.3s ease;
-            background: linear-gradient(145deg, #0A1A2F, #1E3A5F);
-            border: 2px solid #F5E050;
-            border-radius: 40px;
-            box-shadow: 0 0 10px rgba(245, 224, 80, 0.3);
-            position: relative;
-            z-index: 1;
-            animation: velvetShine 3s infinite;
-        `;
-        
-        // Text styling update for better visibility
-        headerDiv.innerHTML = `
-            <div class="text-center p-2">
-                <h2 style="
-                    color: #F5E050;
-                    font-size: 1rem;
-                    font-weight: 600;
-                    line-height: 1.2;
-                    margin: 0;
-                    word-break: break-word;
-                    text-shadow: 0 0 10px rgba(245, 224, 80, 0.5);
-                    font-family: 'Cinzel', serif;
-                ">
-                    ${category}
-                </h2>
-            </div>
-        `;
-        
-        // Content div styling updated to match width of header
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'hidden mt-4 w-full';
-        contentDiv.style.cssText = `
-            display: none;
-            justify-content: center;
-            width: 100%;
-        `;
-        
-        const itemsContainer = document.createElement('div');
-        itemsContainer.style.cssText = `
-            background: none;
-            border-radius: 8px;
-            overflow: hidden;
-            width: 320px;
-            padding: 10px;
-        `;
-        itemsContainer.className = 'menu-card';
-        itemsContainer.style.background = 'linear-gradient(145deg, #F5E050, #DAA520);';
-        itemsContainer.boxShadow = '0 4px 12px rgba(218, 165, 32, 0.3);';
-        itemsContainer.overflow = 'hidden;';
-        itemsContainer.width = '320px;';
-        itemsContainer.padding = '10px;';
-        itemsContainer.className = 'menu-card divide-y divide-[#0A1A2F]';
-        
-        groupedItems[category].forEach(item => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'p-3';
-            itemDiv.style.cssText = `
-                transition: all 0.3s ease;
-                background: transparent;
-            `;
-            
-            // Add hover effect through CSS
-            if (!document.querySelector('#menuItemHover')) {
-                const styleSheet = document.createElement('style');
-                styleSheet.id = 'menuItemHover';
-                styleSheet.textContent = `
-                    .menu-item {
-                        margin: 22px 0;
-                        border-radius: 12px;
-                        background: transparent;
-                        overflow: hidden;
-                        transition: all 0.3s ease;
-                        border: 1px solid rgba(218, 165, 32, 0.5);
-                        box-shadow: 0 0 8px rgba(218, 165, 32, 0.4);
-                        width: 100%;
-                        max-width: 320px;
-                    }
-                    
-                    .menu-item:hover {
-                        background: rgba(255, 255, 255, 0.1);
-                        box-shadow: 0 0 12px rgba(218, 165, 32, 0.7);
-                        transform: translateY(-2px);
-                        border-color: rgba(218, 165, 32, 0.8);
-                    }
-                    
-                    .category-header {
-                        box-shadow: 0 0 15px rgba(245, 224, 80, 0.5) !important;
-                        transition: all 0.3s ease !important;
-                    }
-                    
-                    .category-header:hover {
-                        box-shadow: 0 0 20px rgba(245, 224, 80, 0.8) !important;
-                        transform: translateY(-3px) !important;
-                    }
-                    
-                    @keyframes goldPulse {
-                        0%, 100% { box-shadow: 0 0 8px rgba(218, 165, 32, 0.4); border-color: rgba(218, 165, 32, 0.5); }
-                        50% { box-shadow: 0 0 12px rgba(218, 165, 32, 0.7); border-color: rgba(218, 165, 32, 0.8); }
-                    }
-                    
-                    .menu-item {
-                        animation: goldPulse 3s infinite;
-                    }
-                    
-                    .add-button {
-                        background-color: #4CAF50 !important;
-                        color: white !important;
-                        border: none;
-                        border-radius: 20px;
-                        padding: 5px 15px;
-                        min-width: 80px;
-                        font-weight: 500;
-                        transition: all 0.3s ease;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                    }
-                    
-                    .add-button:hover {
-                        background-color: #45a049 !important;
-                        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-                        transform: translateY(-2px);
-                    }
-                    
-                    .item-quantity {
-                        color: #FF0000;
-                        font-weight: bold;
-                        font-size: 1.2rem;
-                        display: inline-block;
-                        margin: 0 5px;
-                    }
-                    
-                    .menu-item-row {
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
-                        width: 100%;
-                        padding: 8px;
-                    }
-                    
-                    .dish-name-container {
-                        display: flex;
-                        align-items: center;
-                        flex: 1;
-                    }
-                    
-                    .quantity-controls {
-                        display: flex;
-                        align-items: center;
-                        margin-left: 5px;
-                    }
-                    
-                    .decrement-button {
-                        background-color: #f44336 !important;
-                        color: white !important;
-                        border: none;
-                        border-radius: 50%;
-                        width: 24px;
-                        height: 24px;
-                        font-weight: bold;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        cursor: pointer;
-                        transition: all 0.3s ease;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                        margin-right: 5px;
-                    }
-                    
-                    .decrement-button:hover {
-                        background-color: #d32f2f !important;
-                        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-                    }
-                    
-                    .hidden-control {
-                        visibility: hidden;
-                        opacity: 0;
-                    }
-                `;
-                document.head.appendChild(styleSheet);
-            }
-            itemDiv.classList.add('menu-item');
-
-            // Get quantity of this item in cart
-            const cartItem = cart.find(cartItem => cartItem.name === item.name);
-            const quantity = cartItem ? cartItem.quantity : 0;
-            
-            // Create quantity controls with decrement button
-            const decrementClass = quantity > 0 ? 'decrement-button' : 'decrement-button hidden-control';
-            const quantityDisplay = quantity > 0 ? `<span class="item-quantity">(${quantity})</span>` : '';
-
-            itemDiv.innerHTML = `
-                <div class="menu-item-row">
-                    <div class="dish-name-container">
-                        <span class="text-sm font-medium" style="color: #DAA520; font-family: 'Lora', serif; text-shadow: 0 0 3px rgba(218, 165, 32, 0.3);">${item.name}</span>
-                        <div class="quantity-controls">
-                            <button onclick="removeFromCart('${item.name}', ${item.price})" class="${decrementClass}">-</button>
-                            ${quantityDisplay}
-                        </div>
-                    </div>
-                    <button onclick="addToCart('${item.name}', ${item.price})" 
-                            class="add-button"
-                            style="font-family: 'Lora', serif;">
-                        ₹${item.price}
-                    </button>
-                </div>
-            `;
-            itemsContainer.appendChild(itemDiv);
+        folderDiv.addEventListener('click', () => {
+            openCategoryWindow(category, groupedItems[category]);
         });
-
-        contentDiv.appendChild(itemsContainer);
-        categoryDiv.appendChild(headerDiv);
-        categoryDiv.appendChild(contentDiv);
-        menuDiv.appendChild(categoryDiv);
-
-        // Click handler updated to properly toggle visibility
-        headerDiv.addEventListener('click', () => {
-            document.querySelectorAll('.category-section').forEach(section => {
-                if (section !== categoryDiv) {
-                    const content = section.querySelector('div:nth-child(2)');
-                    content.style.display = 'none';
-                    content.classList.add('hidden');
-                }
-            });
-            
-            if (contentDiv.classList.contains('hidden')) {
-                contentDiv.style.display = 'flex';
-                contentDiv.classList.remove('hidden');
-            } else {
-                contentDiv.style.display = 'none';
-                contentDiv.classList.add('hidden');
-            }
-        });
+        
+        categoriesDiv.appendChild(folderDiv);
     });
 }
 
-// Update cart styling with new design
-function updateCart() {
-    const cartDiv = document.getElementById('cart-items');
-    cartDiv.innerHTML = '';
+// Open category window with items
+function openCategoryWindow(category, items) {
+    const categoryWindow = document.getElementById('category-window');
+    const categoryTitle = document.getElementById('category-title');
+    const categoryContent = document.getElementById('category-content');
     
-    if (cart.length === 0) {
-        cartDiv.innerHTML = '<div class="text-base text-center p-3" style="font-family: \'Lora\', serif; color: #000000;">Your cart is empty</div>';
-    } else {
-        cart.forEach(item => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'py-2 px-3 border-b border-gray-100 last:border-0';
-            itemDiv.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <div class="flex-1">
-                        <span class="text-base font-bold" style="font-family: 'Lora', serif; color: #000000;">${item.name}</span>
-                        <div class="flex items-center mt-1">
-                            <span class="text-sm" style="font-family: 'Lora', serif; color: #000000;">Qty: ${item.quantity}</span>
-                            <span class="text-base font-bold ml-2" style="font-family: 'Lora', serif; color: #000000;">₹${item.price * item.quantity}</span>
-                        </div>
-                    </div>
-                    <button onclick="removeFromCart('${item.name}', ${item.price})" 
-                            class="text-sm px-2 py-1 hover:bg-[#0A1A2F] hover:text-[#F5E050] rounded transition-all duration-300"
-                            style="font-family: 'Lora', serif; color: #000000; border: 1px solid #000000;">
-                        Remove
-                    </button>
-                </div>
-            `;
-            cartDiv.appendChild(itemDiv);
-        });
-    }
-
-    // Update both total displays with new design colors
-    const totalDiv = document.getElementById('cart-total');
-    const floatingTotal = document.getElementById('floating-total');
+    categoryTitle.textContent = category;
+    categoryContent.innerHTML = '';
     
-    if (totalDiv) {
-        totalDiv.innerHTML = total;
-        totalDiv.style.fontFamily = "'Lora', serif";
-        totalDiv.style.color = "#000000";
-    }
-    if (floatingTotal) {
-        floatingTotal.innerHTML = total;
-        floatingTotal.parentElement.style.color = '#F5E050';
-        floatingTotal.parentElement.style.textShadow = '0 0 10px #F5E050';
-        floatingTotal.parentElement.style.animation = 'glow 1.5s ease-in-out infinite alternate';
-    }
+    items.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'menu-item';
+        
+        // Get quantity of this item in cart
+        const cartItem = cart.find(cartItem => cartItem.name === item.name);
+        const quantity = cartItem ? cartItem.quantity : 0;
+        
+        itemDiv.innerHTML = `
+            <div>
+                <div style="font-weight: bold;">${item.name}</div>
+                <div style="font-size: 12px;">₹${item.price}</div>
+                ${quantity > 0 ? `<div style="color: green; font-size: 12px;">In cart: ${quantity}</div>` : ''}
+            </div>
+            <button class="add-button" onclick="addToCart('${item.name}', ${item.price})">Add to Cart</button>
+        `;
+        
+        categoryContent.appendChild(itemDiv);
+    });
+    
+    openWindow('category-window');
 }
 
-// addToCart function - updated to refresh menu display with quantities and decrement button
+// addToCart function
 function addToCart(name, price) {
     const existingItem = cart.find(item => item.name === name);
     if (existingItem) {
@@ -542,89 +246,129 @@ function addToCart(name, price) {
     total += price;
     updateCart();
     
-    // Update the menu item display to show updated quantities
-    const menuItems = document.querySelectorAll('.menu-item');
-    menuItems.forEach(menuItem => {
-        const nameSpan = menuItem.querySelector('.dish-name-container span:first-child');
-        if (nameSpan && nameSpan.textContent === name) {
-            const container = nameSpan.parentElement;
-            const cartItem = cart.find(item => item.name === name);
-            
-            // Get the quantity controls container
-            const quantityControls = container.querySelector('.quantity-controls');
-            if (quantityControls) {
-                // Update decrement button visibility
-                const decrementButton = quantityControls.querySelector('button');
-                if (decrementButton) {
-                    decrementButton.classList.remove('hidden-control');
-                }
-                
-                // Update quantity display
-                let quantitySpan = quantityControls.querySelector('.item-quantity');
-                if (!quantitySpan && cartItem && cartItem.quantity > 0) {
-                    // Create quantity span if it doesn't exist
-                    quantitySpan = document.createElement('span');
-                    quantitySpan.className = 'item-quantity';
-                    quantityControls.appendChild(quantitySpan);
-                }
-                
-                if (quantitySpan && cartItem) {
-                    quantitySpan.textContent = `(${cartItem.quantity})`;
-                }
-            }
-        }
-    });
-}
-
-// removeFromCart function - updated to refresh menu display with quantities and decrement button
-function removeFromCart(name, price) {
-    const item = cart.find(item => item.name === name);
-    if (item) {
-        item.quantity -= 1;
-        total -= price;
-        if (item.quantity === 0) {
-            cart = cart.filter(i => i.name !== name);
-        }
-        updateCart();
+    // Update the category window if open
+    const categoryWindow = document.getElementById('category-window');
+    if (categoryWindow.style.display === 'block') {
+        const categoryTitle = document.getElementById('category-title').textContent;
+        const categoryContent = document.getElementById('category-content');
         
-        // Update the menu item display to show updated quantities
-        const menuItems = document.querySelectorAll('.menu-item');
+        // Find all menu items in the current category window
+        const menuItems = categoryContent.querySelectorAll('.menu-item');
         menuItems.forEach(menuItem => {
-            const nameSpan = menuItem.querySelector('.dish-name-container span:first-child');
-            if (nameSpan && nameSpan.textContent === name) {
-                const container = nameSpan.parentElement;
+            const itemName = menuItem.querySelector('div > div:first-child').textContent;
+            if (itemName === name) {
                 const cartItem = cart.find(item => item.name === name);
+                const quantityDiv = menuItem.querySelector('div > div:nth-child(3)');
                 
-                // Get the quantity controls container
-                const quantityControls = container.querySelector('.quantity-controls');
-                if (quantityControls) {
-                    // Update decrement button visibility
-                    const decrementButton = quantityControls.querySelector('button');
-                    if (decrementButton) {
-                        if (!cartItem || cartItem.quantity === 0) {
-                            decrementButton.classList.add('hidden-control');
-                        }
-                    }
-                    
-                    // Update quantity display
-                    const quantitySpan = quantityControls.querySelector('.item-quantity');
-                    if (quantitySpan) {
-                        if (cartItem && cartItem.quantity > 0) {
-                            quantitySpan.textContent = `(${cartItem.quantity})`;
-                        } else {
-                            quantitySpan.textContent = '';
-                        }
-                    }
+                if (quantityDiv && quantityDiv.textContent.includes('In cart:')) {
+                    quantityDiv.textContent = `In cart: ${cartItem.quantity}`;
+                } else {
+                    const priceDiv = menuItem.querySelector('div > div:nth-child(2)');
+                    const quantityDiv = document.createElement('div');
+                    quantityDiv.style.color = 'green';
+                    quantityDiv.style.fontSize = '12px';
+                    quantityDiv.textContent = `In cart: ${cartItem.quantity}`;
+                    priceDiv.insertAdjacentElement('afterend', quantityDiv);
                 }
             }
         });
     }
 }
 
-// submitOrder function - fixing the implementation
+// removeFromCart function
+function removeFromCart(name, price) {
+    const existingItem = cart.find(item => item.name === name);
+    if (existingItem) {
+        existingItem.quantity -= 1;
+        total -= price;
+        
+        if (existingItem.quantity <= 0) {
+            cart = cart.filter(item => item.name !== name);
+        }
+        
+        updateCart();
+        
+        // Update the category window if open
+        const categoryWindow = document.getElementById('category-window');
+        if (categoryWindow.style.display === 'block') {
+            const categoryTitle = document.getElementById('category-title').textContent;
+            const categoryContent = document.getElementById('category-content');
+            
+            // Find all menu items in the current category window
+            const menuItems = categoryContent.querySelectorAll('.menu-item');
+            menuItems.forEach(menuItem => {
+                const itemName = menuItem.querySelector('div > div:first-child').textContent;
+                if (itemName === name) {
+                    const cartItem = cart.find(item => item.name === name);
+                    const quantityDiv = menuItem.querySelector('div > div:nth-child(3)');
+                    
+                    if (quantityDiv && quantityDiv.textContent.includes('In cart:')) {
+                        if (cartItem) {
+                            quantityDiv.textContent = `In cart: ${cartItem.quantity}`;
+                        } else {
+                            quantityDiv.remove();
+                        }
+                    }
+                }
+            });
+        }
+    }
+}
+
+// Update cart display
+function updateCart() {
+    const cartItemsDiv = document.getElementById('cart-items');
+    const cartTotalSpan = document.getElementById('cart-total');
+    const taskbarTotalSpan = document.getElementById('taskbar-total');
+    
+    cartItemsDiv.innerHTML = '';
+    
+    if (cart.length === 0) {
+        cartItemsDiv.innerHTML = '<div style="text-align: center; padding: 20px;">Your cart is empty</div>';
+    } else {
+        cart.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'cart-item';
+            itemDiv.innerHTML = `
+                <div>
+                    <div style="font-weight: bold;">${item.name}</div>
+                    <div style="font-size: 12px;">₹${item.price} x ${item.quantity} = ₹${item.price * item.quantity}</div>
+                </div>
+                <button class="add-button" onclick="removeFromCart('${item.name}', ${item.price})" style="background: #D4D0C8; border: 1px solid #888;">Remove</button>
+            `;
+            cartItemsDiv.appendChild(itemDiv);
+        });
+    }
+    
+    cartTotalSpan.textContent = total;
+    taskbarTotalSpan.textContent = total;
+}
+
+// Send order email
+async function sendOrderEmailAsync(orderDetails) {
+    try {
+        const templateParams = {
+            room_number: orderDetails.roomNumber,
+            mobile_number: orderDetails.mobileNumber,
+            order_details: orderDetails.cart.map(item => 
+                `${item.name} - ₹${item.price} x ${item.quantity} = ₹${item.price * item.quantity}`
+            ).join('\n'),
+            total_amount: orderDetails.total
+        };
+        
+        const response = await emailjs.send('service_rai_guest_house', 'template_rai_guest_house', templateParams);
+        console.log('Email sent successfully:', response);
+        return true;
+    } catch (error) {
+        console.error('Failed to send email:', error);
+        return false;
+    }
+}
+
+// Submit order function
 async function submitOrder() {
     if (cart.length === 0) {
-        alert('कृपया कुछ आइटम्स ऑर्डर करें');
+        alert('Please add some items to your cart');
         return;
     }
 
@@ -635,13 +379,13 @@ async function submitOrder() {
     // Validate room number
     const validRooms = ['Dorm', 'Dormitory', 'R0', 'R1', 'R2', 'R3', 'R4', 'F2', 'F3', 'F4', 'F5', 'F6'];
     if (!validRooms.includes(roomNumber)) {
-        alert('कृपया सही रूम नंबर डालें\nValid rooms are: Dormitory/Dorm, R0, R1, R2, R3, R4, F2, F3, F4, F5, F6');
+        alert('Please enter a valid room number\nValid rooms are: Dormitory/Dorm, R0, R1, R2, R3, R4, F2, F3, F4, F5, F6');
         return;
     }
 
     // Validate mobile number
     if (!/^\d{10}$/.test(mobileNumber)) {
-        alert('कृपया 10 अंकों का मोबाइल नंबर डालें\nPlease enter a 10-digit mobile number');
+        alert('Please enter a 10-digit mobile number');
         return;
     }
 
@@ -649,6 +393,9 @@ async function submitOrder() {
         alert('Please accept the terms and conditions');
         return;
     }
+
+    // Show Windows XP style loading dialog
+    showXPDialog('Processing', 'Please wait while your order is being processed...', true);
 
     const orderData = {
         cart: cart,
@@ -660,10 +407,7 @@ async function submitOrder() {
     try {
         console.log('Submitting order with data:', orderData);
 
-        // Send email notification first
-        sendOrderEmail(orderData);
-
-        // Then submit order to API
+        // First submit order to API
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -673,242 +417,165 @@ async function submitOrder() {
         const result = await response.json();
         console.log('Response body:', result);
 
+        // Close the processing dialog
+        closeXPDialog();
+
         if (result.status === 'success') {
-            alert('Order placed successfully!');
+            // Only send email if API call was successful
+            await sendOrderEmailAsync(orderData);
+            
+            showXPDialog('Success', 'Your order has been placed successfully!', false);
             cart = [];
             total = 0;
             updateCart();
         } else {
-            alert('Error placing order: ' + result.message);
+            showXPDialog('Error', 'Error placing order: ' + result.message, false);
         }
     } catch (error) {
         console.error('Error submitting order:', error);
-        alert('Error placing order: ' + error.message);
+        closeXPDialog();
+        showXPDialog('Error', 'Error placing order: ' + error.message, false);
     }
 }
 
-// Add this function to send email notifications
-function sendOrderEmail(orderDetails) {
-    // Format order items for email
-    let itemsList = '';
-    orderDetails.cart.forEach(item => {
-        itemsList += `${item.name} x ${item.quantity} - ₹${item.price * item.quantity}\n`;
-    });
+// Windows XP style dialog
+function showXPDialog(title, message, isProcessing) {
+    // Remove any existing dialog
+    closeXPDialog();
     
-    // Prepare template parameters
-    const templateParams = {
-        room_number: orderDetails.roomNumber,
-        mobile_number: orderDetails.mobileNumber,
-        order_items: itemsList,
-        order_total: orderDetails.total,
-        order_time: new Date().toLocaleString()
-    };
+    const dialog = document.createElement('div');
+    dialog.id = 'xp-dialog';
+    dialog.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #ECE9D8;
+        border: 1px solid #0054E3;
+        border-radius: 5px;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+        width: 300px;
+        z-index: 1000;
+    `;
     
-    // Send email using EmailJS
-    emailjs.send("service_0k0kvk8", "template_2cy2428", templateParams)
-        .then(function(response) {
-            console.log('Email sent successfully!', response.status, response.text);
-        }, function(error) {
-            console.error('Failed to send email:', error);
-        });
+    const header = document.createElement('div');
+    header.style.cssText = `
+        height: 30px;
+        background: linear-gradient(to right, #0058E6 0%, #2B91ED 50%, #0058E6 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 10px;
+        border-radius: 5px 5px 0 0;
+    `;
+    header.innerHTML = `
+        <div style="display: flex; align-items: center; font-weight: bold; font-family: 'Tahoma', sans-serif;">
+            <img src="https://win98icons.alexmeub.com/icons/png/msg_information-0.png" alt="Info" style="width: 16px; height: 16px; margin-right: 5px;">
+            <span>${title}</span>
+        </div>
+    `;
+    
+    const content = document.createElement('div');
+    content.style.cssText = `
+        padding: 20px;
+        text-align: center;
+        color: black;
+        font-family: 'Tahoma', sans-serif;
+    `;
+    
+    if (isProcessing) {
+        content.innerHTML = `
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <img src="https://win98icons.alexmeub.com/icons/png/hourglass-0.png" alt="Loading" style="width: 32px; height: 32px; margin-right: 10px;">
+                <span>${message}</span>
+            </div>
+            <div style="width: 100%; height: 20px; background: #D4D0C8; border: 1px solid #888; border-radius: 2px; overflow: hidden;">
+                <div id="progress-bar" style="width: 0%; height: 100%; background: linear-gradient(to right, #0058E6 0%, #2B91ED 50%, #0058E6 100%);"></div>
+            </div>
+        `;
+        
+        // Animate progress bar
+        setTimeout(() => {
+            const progressBar = document.getElementById('progress-bar');
+            if (progressBar) {
+                let width = 0;
+                const interval = setInterval(() => {
+                    if (width >= 100) {
+                        clearInterval(interval);
+                    } else {
+                        width += 1;
+                        progressBar.style.width = width + '%';
+                    }
+                }, 50);
+            }
+        }, 100);
+    } else {
+        content.innerHTML = `
+            <p style="margin-bottom: 20px;">${message}</p>
+            <button id="dialog-ok" style="
+                background: linear-gradient(to bottom, #FDFDFD 0%, #F6F6F6 50%, #E8E8E8 100%);
+                border: 1px solid #999;
+                border-radius: 3px;
+                padding: 5px 20px;
+                cursor: pointer;
+                font-family: 'Tahoma', sans-serif;
+                font-size: 12px;
+            ">OK</button>
+        `;
+    }
+    
+    dialog.appendChild(header);
+    dialog.appendChild(content);
+    document.body.appendChild(dialog);
+    
+    // Add event listener to OK button
+    const okButton = document.getElementById('dialog-ok');
+    if (okButton) {
+        okButton.addEventListener('click', closeXPDialog);
+    }
 }
 
-// Event listener for order button
-document.addEventListener('DOMContentLoaded', function() {
-    // Show initial warning
-    showInitialWarning();
+function closeXPDialog() {
+    const dialog = document.getElementById('xp-dialog');
+    if (dialog) {
+        dialog.remove();
+    }
+}
+
+// Add Windows XP error sound - modified to require user interaction first
+function playXPSound(type) {
+    // Only play sounds after user has interacted with the page
+    if (!document.documentElement.hasAttribute('data-user-interacted')) {
+        console.log('Sound not played: waiting for user interaction');
+        return;
+    }
     
-    // Fetch menu
-    fetchMenu();
+    const sounds = {
+        error: 'https://www.101soundboards.com/storage/board_sounds_rendered/10835.mp3', // Windows XP Error sound
+        success: 'https://www.101soundboards.com/storage/board_sounds_rendered/10834.mp3', // Windows XP Shutdown sound
+        startup: 'https://www.101soundboards.com/storage/board_sounds_rendered/10833.mp3' // Windows XP Startup sound
+    };
     
-    // Style the "Places to Visit" button
-    setTimeout(styleVisitButton, 1000);
-    
-    // Style form inputs
-    styleFormInputs();
-    
-    // Attach event to submit button
-    const submitButton = document.getElementById('submit-order');
-    if (submitButton) {
-        submitButton.addEventListener('click', submitOrder);
-    } else {
-        // If button not found by ID, try to find by text content
-        const allButtons = document.querySelectorAll('button');
-        for (let btn of allButtons) {
-            if (btn.textContent.trim().includes('Place Order')) {
-                btn.id = 'submit-order';
-                btn.addEventListener('click', submitOrder);
-                break;
-            }
-        }
+    if (sounds[type]) {
+        const audio = new Audio(sounds[type]);
+        audio.volume = 0.3; // Lower volume
+        audio.play().catch(e => console.error('Error playing sound:', e));
+    }
+}
+
+// Mark that user has interacted with the page
+document.addEventListener('click', function() {
+    if (!document.documentElement.hasAttribute('data-user-interacted')) {
+        document.documentElement.setAttribute('data-user-interacted', 'true');
+        console.log('User interaction detected, sounds enabled');
+        // Now we can play the startup sound
+        playXPSound('startup');
     }
 });
 
-// Style the "Places to Visit" button
-function styleVisitButton() {
-    const visitLinks = document.querySelectorAll('a');
-    
-    visitLinks.forEach(link => {
-        if (link.textContent.includes('Places to visit in Ujjain') || 
-            link.textContent.includes('Places to Visit in Ujjain')) {
-            
-            // Skip if link already has the places-button class
-            if (link.classList.contains('places-button')) return;
-            
-            // Apply the new styling directly to the existing link
-            link.className = 'places-button';
-            link.style.background = 'linear-gradient(45deg, #0A1A2F, #F5E050)';
-            link.style.color = '#FFFFFF';
-            link.style.padding = '10px 20px';
-            link.style.borderRadius = '8px';
-            link.style.fontWeight = 'bold';
-            link.style.textAlign = 'center';
-            link.style.margin = '0 auto 20px auto';
-            link.style.display = 'block';
-            link.style.maxWidth = '300px';
-            link.style.boxShadow = '0 0 10px rgba(245, 224, 80, 0.5)';
-            link.style.transition = 'all 0.3s ease';
-            link.style.textDecoration = 'none';
-            link.style.fontFamily = "'Lora', serif";
-            
-            // Add hover effects
-            link.onmouseover = function() {
-                this.style.background = 'linear-gradient(45deg, #F5E050, #0A1A2F)';
-                this.style.boxShadow = '0 0 15px rgba(245, 224, 80, 0.8)';
-                this.style.transform = 'translateY(-2px)';
-            };
-            
-            link.onmouseout = function() {
-                this.style.background = 'linear-gradient(45deg, #0A1A2F, #F5E050)';
-                this.style.boxShadow = '0 0 10px rgba(245, 224, 80, 0.5)';
-                this.style.transform = 'translateY(0)';
-            };
-        }
-    });
-}
-
-// Style form inputs
-function styleFormInputs() {
-    const roomNumberInput = document.getElementById('room-number');
-    const mobileNumberInput = document.getElementById('mobile-number');
-    const termsCheckbox = document.getElementById('terms-checkbox');
-    const submitButton = document.getElementById('submit-order');
-    
-    // Style select and input fields
-    [roomNumberInput, mobileNumberInput].forEach(input => {
-        if (!input) return;
-        
-        input.className = 'input-field w-full';
-        input.style.background = '#F8F7F2';
-        input.style.border = '2px solid #F5E050';
-        input.style.borderRadius = '8px';
-        input.style.padding = '10px';
-        input.style.color = '#0A1A2F';
-        input.style.transition = 'border-color 0.3s ease, box-shadow 0.3s ease';
-        input.style.fontFamily = "'Lora', serif";
-        
-        // Add focus effects
-        input.addEventListener('focus', () => {
-            input.style.borderColor = '#DAA520';
-            input.style.boxShadow = '0 0 8px rgba(245, 224, 80, 0.5)';
-        });
-        
-        input.addEventListener('blur', () => {
-            input.style.borderColor = '#F5E050';
-            input.style.boxShadow = 'none';
-        });
-    });
-    
-    // Style submit button
-    if (submitButton) {
-        submitButton.className = 'w-full order-button';
-        submitButton.style.background = '#0A1A2F';
-        submitButton.style.color = '#F5E050';
-        submitButton.style.border = 'none';
-        submitButton.style.borderRadius = '8px';
-        submitButton.style.padding = '12px';
-        submitButton.style.fontSize = '16px';
-        submitButton.style.fontWeight = '600';
-        submitButton.style.transition = 'background 0.3s ease, color 0.3s ease';
-        submitButton.style.fontFamily = "'Lora', serif";
-        
-        // Add hover effects
-        submitButton.addEventListener('mouseover', function() {
-            this.style.background = '#F5E050';
-            this.style.color = '#0A1A2F';
-        });
-        
-        submitButton.addEventListener('mouseout', function() {
-            this.style.background = '#0A1A2F';
-            this.style.color = '#F5E050';
-        });
-    }
-    
-    // Style floating cart
-    const floatingCart = document.querySelector('.floating-cart');
-    if (floatingCart) {
-        floatingCart.style.background = '#0A1A2F';
-        floatingCart.style.border = '3px solid #F5E050';
-        floatingCart.style.boxShadow = '0 0 15px rgba(245, 224, 80, 0.4)';
-    }
-}
-
-// Add a function to apply the new fonts to the entire page
-function applyFonts() {
-    // Add Google Fonts if not already present
-    if (!document.querySelector('link[href*="fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;500;600"]')) {
-        const fontLink = document.createElement('link');
-        fontLink.href = "https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;500;600&display=swap";
-        fontLink.rel = "stylesheet";
-        document.head.appendChild(fontLink);
-    }
-    
-    // Apply fonts to elements
-    const style = document.createElement('style');
-    style.textContent = `
-        body, p, span, div, button, input, select, textarea {
-            font-family: 'Lora', serif;
-        }
-        
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Cinzel', serif;
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// Add a function to apply the new background to the page
-function applyBackground() {
-    const style = document.createElement('style');
-    style.textContent = `
-        body {
-            font-family: 'Lora', serif;
-            background: linear-gradient(135deg, #0A1A2F 0%, #1E3A5F 100%);
-            color: #F5E050;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// Event listeners
-document.addEventListener('DOMContentLoaded', function() {
-    // Show initial warning
-    showInitialWarning();
-    
-    // Fetch menu
-    fetchMenu();
-    
-    // Style the "Places to Visit" button
-    setTimeout(styleVisitButton, 1000);
-    
-    // Style form inputs
-    styleFormInputs();
-    
-    // Apply fonts and background
-    applyFonts();
-    applyBackground();
+// Remove automatic sound playing on load
+// Instead, we'll play it after first user interaction
+window.addEventListener('load', () => {
+    console.log('Page loaded, waiting for user interaction before playing sounds');
 });
