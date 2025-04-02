@@ -120,6 +120,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Find the start menu item for Restaurant Menu and update its icon
+    const startMenuItems = document.querySelectorAll('.start-menu-item');
+    startMenuItems.forEach(item => {
+        if (item.textContent.includes('Restaurant Menu')) {
+            // Replace the icon with My Computer icon
+            const iconImg = item.querySelector('img');
+            if (iconImg) {
+                iconImg.src = 'https://win98icons.alexmeub.com/icons/png/computer_explorer-0.png';
+                iconImg.alt = 'Restaurant Menu';
+            }
+        }
+    });
+    
     // Start button event
     document.getElementById('start-button').addEventListener('click', toggleStartMenu);
     
@@ -221,12 +234,18 @@ function openCategoryWindow(category, items) {
         const quantity = cartItem ? cartItem.quantity : 0;
         
         itemDiv.innerHTML = `
-            <div>
-                <div style="font-weight: bold;">${item.name}</div>
-                <div style="font-size: 12px;">₹${item.price}</div>
-                ${quantity > 0 ? `<div style="color: green; font-size: 12px;">In cart: ${quantity}</div>` : ''}
+            <div class="menu-item-info">
+                <div class="menu-item-name">${item.name}</div>
+                <div class="menu-item-price">₹${item.price}</div>
             </div>
-            <button class="add-button" onclick="addToCart('${item.name}', ${item.price})">Add to Cart</button>
+            <div class="quantity-controls">
+                ${quantity > 0 ? 
+                    `<button class="quantity-btn" onclick="removeFromCart('${item.name}', ${item.price})">-</button>
+                     <span class="quantity-display">${quantity}</span>` : 
+                    ''
+                }
+                <button class="add-button" onclick="addToCart('${item.name}', ${item.price})">${quantity > 0 ? '+' : 'Add to Cart'}</button>
+            </div>
         `;
         
         categoryContent.appendChild(itemDiv);
@@ -235,7 +254,7 @@ function openCategoryWindow(category, items) {
     openWindow('category-window');
 }
 
-// addToCart function
+// addToCart function - updated to refresh quantity controls
 function addToCart(name, price) {
     const existingItem = cart.find(item => item.name === name);
     if (existingItem) {
@@ -249,33 +268,36 @@ function addToCart(name, price) {
     // Update the category window if open
     const categoryWindow = document.getElementById('category-window');
     if (categoryWindow.style.display === 'block') {
-        const categoryTitle = document.getElementById('category-title').textContent;
         const categoryContent = document.getElementById('category-content');
         
         // Find all menu items in the current category window
         const menuItems = categoryContent.querySelectorAll('.menu-item');
         menuItems.forEach(menuItem => {
-            const itemName = menuItem.querySelector('div > div:first-child').textContent;
+            const itemName = menuItem.querySelector('.menu-item-name').textContent;
             if (itemName === name) {
                 const cartItem = cart.find(item => item.name === name);
-                const quantityDiv = menuItem.querySelector('div > div:nth-child(3)');
+                const quantityControls = menuItem.querySelector('.quantity-controls');
                 
-                if (quantityDiv && quantityDiv.textContent.includes('In cart:')) {
-                    quantityDiv.textContent = `In cart: ${cartItem.quantity}`;
+                if (cartItem.quantity === 1) {
+                    // First item added - replace "Add to Cart" with quantity controls
+                    quantityControls.innerHTML = `
+                        <button class="quantity-btn" onclick="removeFromCart('${name}', ${price})">-</button>
+                        <span class="quantity-display">${cartItem.quantity}</span>
+                        <button class="add-button" onclick="addToCart('${name}', ${price})">+</button>
+                    `;
                 } else {
-                    const priceDiv = menuItem.querySelector('div > div:nth-child(2)');
-                    const quantityDiv = document.createElement('div');
-                    quantityDiv.style.color = 'green';
-                    quantityDiv.style.fontSize = '12px';
-                    quantityDiv.textContent = `In cart: ${cartItem.quantity}`;
-                    priceDiv.insertAdjacentElement('afterend', quantityDiv);
+                    // Update existing quantity display
+                    const quantityDisplay = menuItem.querySelector('.quantity-display');
+                    if (quantityDisplay) {
+                        quantityDisplay.textContent = cartItem.quantity;
+                    }
                 }
             }
         });
     }
 }
 
-// removeFromCart function
+// removeFromCart function - updated to refresh quantity controls
 function removeFromCart(name, price) {
     const existingItem = cart.find(item => item.name === name);
     if (existingItem) {
@@ -291,22 +313,26 @@ function removeFromCart(name, price) {
         // Update the category window if open
         const categoryWindow = document.getElementById('category-window');
         if (categoryWindow.style.display === 'block') {
-            const categoryTitle = document.getElementById('category-title').textContent;
             const categoryContent = document.getElementById('category-content');
             
             // Find all menu items in the current category window
             const menuItems = categoryContent.querySelectorAll('.menu-item');
             menuItems.forEach(menuItem => {
-                const itemName = menuItem.querySelector('div > div:first-child').textContent;
+                const itemName = menuItem.querySelector('.menu-item-name').textContent;
                 if (itemName === name) {
                     const cartItem = cart.find(item => item.name === name);
-                    const quantityDiv = menuItem.querySelector('div > div:nth-child(3)');
+                    const quantityControls = menuItem.querySelector('.quantity-controls');
                     
-                    if (quantityDiv && quantityDiv.textContent.includes('In cart:')) {
-                        if (cartItem) {
-                            quantityDiv.textContent = `In cart: ${cartItem.quantity}`;
-                        } else {
-                            quantityDiv.remove();
+                    if (!cartItem) {
+                        // Item removed completely - revert to simple "Add to Cart" button
+                        quantityControls.innerHTML = `
+                            <button class="add-button" onclick="addToCart('${name}', ${price})">Add to Cart</button>
+                        `;
+                    } else {
+                        // Update quantity display
+                        const quantityDisplay = menuItem.querySelector('.quantity-display');
+                        if (quantityDisplay) {
+                            quantityDisplay.textContent = cartItem.quantity;
                         }
                     }
                 }
@@ -551,6 +577,12 @@ function playXPSound(type) {
         return;
     }
     
+    // Check if sound is already playing
+    if (window.isPlayingSound) {
+        console.log('Sound already playing, ignoring request');
+        return;
+    }
+    
     const sounds = {
         error: 'https://www.101soundboards.com/storage/board_sounds_rendered/10835.mp3', // Windows XP Error sound
         success: 'https://www.101soundboards.com/storage/board_sounds_rendered/10834.mp3', // Windows XP Shutdown sound
@@ -558,19 +590,39 @@ function playXPSound(type) {
     };
     
     if (sounds[type]) {
+        window.isPlayingSound = true;
         const audio = new Audio(sounds[type]);
         audio.volume = 0.3; // Lower volume
-        audio.play().catch(e => console.error('Error playing sound:', e));
+        
+        // Clear the flag when sound ends
+        audio.onended = function() {
+            window.isPlayingSound = false;
+            console.log('Sound finished playing');
+        };
+        
+        // Also clear the flag if there's an error
+        audio.onerror = function() {
+            window.isPlayingSound = false;
+            console.error('Error playing sound');
+        };
+        
+        audio.play().catch(e => {
+            window.isPlayingSound = false;
+            console.error('Error playing sound:', e);
+        });
     }
 }
 
-// Mark that user has interacted with the page
+// Mark that user has interacted with the page - only play startup sound once
 document.addEventListener('click', function() {
     if (!document.documentElement.hasAttribute('data-user-interacted')) {
         document.documentElement.setAttribute('data-user-interacted', 'true');
         console.log('User interaction detected, sounds enabled');
-        // Now we can play the startup sound
-        playXPSound('startup');
+        // Now we can play the startup sound - but only once
+        if (!window.hasPlayedStartupSound) {
+            window.hasPlayedStartupSound = true;
+            playXPSound('startup');
+        }
     }
 });
 
@@ -578,4 +630,7 @@ document.addEventListener('click', function() {
 // Instead, we'll play it after first user interaction
 window.addEventListener('load', () => {
     console.log('Page loaded, waiting for user interaction before playing sounds');
+    // Initialize sound flags
+    window.isPlayingSound = false;
+    window.hasPlayedStartupSound = false;
 });
