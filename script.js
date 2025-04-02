@@ -1,3 +1,8 @@
+// EmailJS initialization
+(function() {
+    emailjs.init("BnI0YMbI7iY0lmOKG");
+})();
+
 // Add this at the start of your script file
 window.addEventListener('scroll', function() {
     const footer = document.querySelector('footer');
@@ -288,18 +293,13 @@ function displayMenu(menuItems) {
         
         const itemsContainer = document.createElement('div');
         itemsContainer.style.cssText = `
-            background: none;
+            background: linear-gradient(145deg, #F5E050, #DAA520);
             border-radius: 8px;
             overflow: hidden;
             width: 320px;
             padding: 10px;
+            box-shadow: 0 4px 12px rgba(218, 165, 32, 0.3);
         `;
-        itemsContainer.className = 'menu-card';
-        itemsContainer.style.background = 'linear-gradient(145deg, #F5E050, #DAA520);';
-        itemsContainer.boxShadow = '0 4px 12px rgba(218, 165, 32, 0.3);';
-        itemsContainer.overflow = 'hidden;';
-        itemsContainer.width = '320px;';
-        itemsContainer.padding = '10px;';
         itemsContainer.className = 'menu-card divide-y divide-[#0A1A2F]';
         
         groupedItems[category].forEach(item => {
@@ -650,6 +650,13 @@ async function submitOrder() {
         return;
     }
 
+    // Show loading indicator
+    const submitButton = document.getElementById('submit-order');
+    if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Placing Order...';
+    }
+
     const orderData = {
         cart: cart,
         total: total,
@@ -660,10 +667,7 @@ async function submitOrder() {
     try {
         console.log('Submitting order with data:', orderData);
 
-        // Send email notification first
-        sendOrderEmail(orderData);
-
-        // Then submit order to API
+        // First submit order to API
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -674,6 +678,9 @@ async function submitOrder() {
         console.log('Response body:', result);
 
         if (result.status === 'success') {
+            // Only send email if API call was successful
+            await sendOrderEmailAsync(orderData);
+            
             alert('Order placed successfully!');
             cart = [];
             total = 0;
@@ -684,65 +691,56 @@ async function submitOrder() {
     } catch (error) {
         console.error('Error submitting order:', error);
         alert('Error placing order: ' + error.message);
-    }
-}
-
-// Add this function to send email notifications
-function sendOrderEmail(orderDetails) {
-    // Format order items for email
-    let itemsList = '';
-    orderDetails.cart.forEach(item => {
-        itemsList += `${item.name} x ${item.quantity} - ₹${item.price * item.quantity}\n`;
-    });
-    
-    // Prepare template parameters
-    const templateParams = {
-        room_number: orderDetails.roomNumber,
-        mobile_number: orderDetails.mobileNumber,
-        order_items: itemsList,
-        order_total: orderDetails.total,
-        order_time: new Date().toLocaleString()
-    };
-    
-    // Send email using EmailJS
-    emailjs.send("service_0k0kvk8", "template_2cy2428", templateParams)
-        .then(function(response) {
-            console.log('Email sent successfully!', response.status, response.text);
-        }, function(error) {
-            console.error('Failed to send email:', error);
-        });
-}
-
-// Event listener for order button
-document.addEventListener('DOMContentLoaded', function() {
-    // Show initial warning
-    showInitialWarning();
-    
-    // Fetch menu
-    fetchMenu();
-    
-    // Style the "Places to Visit" button
-    setTimeout(styleVisitButton, 1000);
-    
-    // Style form inputs
-    styleFormInputs();
-    
-    // Attach event to submit button
-    const submitButton = document.getElementById('submit-order');
-    if (submitButton) {
-        submitButton.addEventListener('click', submitOrder);
-    } else {
-        // If button not found by ID, try to find by text content
-        const allButtons = document.querySelectorAll('button');
-        for (let btn of allButtons) {
-            if (btn.textContent.trim().includes('Place Order')) {
-                btn.id = 'submit-order';
-                btn.addEventListener('click', submitOrder);
-                break;
-            }
+    } finally {
+        // Reset button state
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Place Order';
         }
     }
-});
+}
+
+// Add this function to send email notifications with Promise
+function sendOrderEmailAsync(orderDetails) {
+    return new Promise((resolve, reject) => {
+        // Format order items for email
+        let itemsList = '';
+        orderDetails.cart.forEach(item => {
+            itemsList += `${item.name} x ${item.quantity} - ₹${item.price * item.quantity}\n`;
+        });
+        
+        // Prepare template parameters
+        const templateParams = {
+            room_number: orderDetails.roomNumber,
+            mobile_number: orderDetails.mobileNumber,
+            order_items: itemsList,
+            order_total: orderDetails.total,
+            order_time: new Date().toLocaleString()
+        };
+        
+        // Send email using EmailJS
+        emailjs.send("service_0k0kvk8", "template_2cy2428", templateParams)
+            .then(function(response) {
+                console.log('Email sent successfully!', response.status, response.text);
+                resolve(true);
+            }, function(error) {
+                console.error('Failed to send email:', error);
+                resolve(false); // Still resolve but with false to continue the order process
+            });
+    });
+}
+
+// Keep the original sendOrderEmail for backward compatibility
+function sendOrderEmail(orderDetails) {
+    sendOrderEmailAsync(orderDetails)
+        .then(success => {
+            if (success) {
+                console.log('Email sent successfully via compatibility function');
+            } else {
+                console.error('Failed to send email via compatibility function');
+            }
+        });
+}
 
 // Style the "Places to Visit" button
 function styleVisitButton() {
@@ -829,72 +827,46 @@ function styleFormInputs() {
         submitButton.style.padding = '12px';
         submitButton.style.fontSize = '16px';
         submitButton.style.fontWeight = '600';
-        submitButton.style.transition = 'background 0.3s ease, color 0.3s ease';
+        submitButton.style.cursor = 'pointer';
+        submitButton.style.transition = 'all 0.3s ease';
+        submitButton.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
         submitButton.style.fontFamily = "'Lora', serif";
         
         // Add hover effects
-        submitButton.addEventListener('mouseover', function() {
-            this.style.background = '#F5E050';
-            this.style.color = '#0A1A2F';
+        submitButton.addEventListener('mouseover', () => {
+            submitButton.style.background = '#F5E050';
+            submitButton.style.color = '#0A1A2F';
+            submitButton.style.transform = 'translateY(-2px)';
+            submitButton.style.boxShadow = '0 6px 10px rgba(0, 0, 0, 0.15)';
         });
         
-        submitButton.addEventListener('mouseout', function() {
-            this.style.background = '#0A1A2F';
-            this.style.color = '#F5E050';
+        submitButton.addEventListener('mouseout', () => {
+            submitButton.style.background = '#0A1A2F';
+            submitButton.style.color = '#F5E050';
+            submitButton.style.transform = 'translateY(0)';
+            submitButton.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
         });
-    }
-    
-    // Style floating cart
-    const floatingCart = document.querySelector('.floating-cart');
-    if (floatingCart) {
-        floatingCart.style.background = '#0A1A2F';
-        floatingCart.style.border = '3px solid #F5E050';
-        floatingCart.style.boxShadow = '0 0 15px rgba(245, 224, 80, 0.4)';
     }
 }
 
-// Add a function to apply the new fonts to the entire page
+// Apply fonts function
 function applyFonts() {
-    // Add Google Fonts if not already present
-    if (!document.querySelector('link[href*="fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;500;600"]')) {
+    if (!document.querySelector('link[href*="fonts.googleapis.com"]')) {
         const fontLink = document.createElement('link');
         fontLink.href = "https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;500;600&display=swap";
         fontLink.rel = "stylesheet";
         document.head.appendChild(fontLink);
     }
-    
-    // Apply fonts to elements
-    const style = document.createElement('style');
-    style.textContent = `
-        body, p, span, div, button, input, select, textarea {
-            font-family: 'Lora', serif;
-        }
-        
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Cinzel', serif;
-        }
-    `;
-    document.head.appendChild(style);
 }
 
-// Add a function to apply the new background to the page
+// Apply background function
 function applyBackground() {
-    const style = document.createElement('style');
-    style.textContent = `
-        body {
-            font-family: 'Lora', serif;
-            background: linear-gradient(135deg, #0A1A2F 0%, #1E3A5F 100%);
-            color: #F5E050;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-    `;
-    document.head.appendChild(style);
+    document.body.style.background = 'linear-gradient(135deg, #0A1A2F 0%, #1E3A5F 100%)';
+    document.body.style.color = '#F5E050';
+    document.body.style.fontFamily = "'Lora', serif";
 }
 
-// Event listeners
+// Event listener for order button - एक ही बार define करें
 document.addEventListener('DOMContentLoaded', function() {
     // Show initial warning
     showInitialWarning();
