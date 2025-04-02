@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rai Guest House</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rai Guest House - Windows XP Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tahoma:wght@400;700&display=swap" rel="stylesheet">
     <!-- Add EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
@@ -20,188 +20,527 @@
         }
         
         body {
-            font-family: 'Lora', serif;
-            background: linear-gradient(135deg, #0A1A2F 0%, #1E3A5F 100%);
-            color: #F5E050;
+            font-family: 'Tahoma', sans-serif;
+            background-color: #0055E5; /* Windows XP blue color as fallback */
+            background-image: url('https://wallpaperaccess.com/full/1219598.jpg'); /* Original Windows XP Bliss wallpaper */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
             min-height: 100vh;
+            color: #000;
         }
         
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .window {
+                width: 95% !important;
+                left: 2.5% !important;
+                top: 50px !important;
+            }
+            
+            .cart-window {
+                width: 95%;
+                right: 2.5%;
+            }
+            
+            .folder-view {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            }
+            
+            .desktop-icon {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .start-menu {
+                width: 80%;
+                max-width: 320px;
+            }
+        }
         .container {
-            max-width: 480px;
+            max-width: 800px;
             margin: 0 auto;
             padding: 20px;
         }
         
-        header {
-            text-align: center;
-            margin-bottom: 20px;
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(to bottom, #2A6EBB 0%, #378CE7 3%, #3C93F0 6%, #3E97F5 10%, #3F9BFB 15%, #3F9DFD 20%, #3F9FFE 25%, #3FA0FF 30%, #3FA1FF 35%, #3FA1FF 40%, #3FA2FF 45%, #3FA2FF 50%, #3FA2FF 55%, #3FA1FF 60%, #3FA1FF 65%, #3FA0FF 70%, #3F9FFE 75%, #3F9DFD 80%, #3E97F5 90%, #3C93F0 94%, #378CE7 97%, #2A6EBB 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 1000;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
         }
         
-        h1, h2, h3 {
-            font-family: 'Cinzel', serif;
-            color: #F5E050;
-        }
-        
-        .logo {
-            max-width: 200px;
-            margin: 0 auto;
-            display: block;
-        }
-        
-        .places-button {
-            background: linear-gradient(45deg, #0A1A2F, #F5E050);
-            color: #FFFFFF;
-            padding: 10px 20px;
-            border-radius: 8px;
+        .start-button {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(to bottom, #3C993F 0%, #4CBB3F 3%, #54D444 6%, #5CEB49 10%, #5FF04E 15%, #61F350 20%, #62F551 25%, #62F551 30%, #62F551 35%, #62F551 40%, #62F551 45%, #62F551 50%, #62F551 55%, #62F551 60%, #62F551 65%, #61F350 70%, #5FF04E 75%, #5CEB49 80%, #54D444 90%, #4CBB3F 97%, #3C993F 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 8px; /* More rounded corners for XP feel */
             font-weight: bold;
+            cursor: pointer;
+            margin-right: 10px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 2px rgba(0,0,0,0.2);
+            border: 1px solid #2E8132;
+        }
+        
+        .start-button img {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+        
+        .start-menu {
+            position: fixed;
+            bottom: 40px;
+            left: 0;
+            width: 320px;
+            background: #ECE9D8;
+            border: 1px solid #0054E3;
+            border-radius: 0 8px 0 0; /* More rounded corners for XP feel */
+            box-shadow: 2px -2px 10px rgba(0,0,0,0.3);
+            z-index: 999;
+            display: none;
+        }
+        
+        .start-menu-header {
+            height: 60px;
+            background: linear-gradient(to right, #215DC6 0%, #2569DF 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-weight: bold;
+            font-size: 18px;
+            border-bottom: 1px solid #0054E3;
+            border-radius: 0 8px 0 0; /* More rounded corners for XP feel */
+        }
+        
+        .start-menu-items {
+            padding: 10px;
+        }
+        
+        .start-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            cursor: pointer;
+            border-radius: 4px; /* More rounded corners for XP feel */
+        }
+        
+        .start-menu-item:hover {
+            background-color: #316AC5;
+            color: white;
+        }
+        
+        .start-menu-item img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        
+        .window {
+            position: absolute;
+            background: #ECE9D8;
+            border: 1px solid #0054E3;
+            border-radius: 8px 8px 0 0; /* More rounded corners for XP feel */
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            width: 600px;
+            min-height: 400px;
+            display: none;
+            z-index: 100;
+        }
+        
+        .window-header {
+            height: 30px;
+            background: linear-gradient(to right, #0058E6 0%, #2B91ED 50%, #0058E6 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            cursor: move;
+            border-radius: 8px 8px 0 0; /* More rounded corners for XP feel */
+        }
+        
+        .window-title {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .window-title img {
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+        }
+        
+        .window-controls {
+            display: flex;
+        }
+        
+        .window-control {
+            width: 22px;
+            height: 22px;
+            margin-left: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px; /* More rounded corners for XP feel */
+            cursor: pointer;
+        }
+        
+        .window-control:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        
+        .window-close {
+            background-color: #FF5252;
+        }
+        
+        .window-content {
+            padding: 10px;
+            overflow-y: auto;
+            max-height: calc(100vh - 150px);
+        }
+        
+        .folder-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            padding: 15px;
+        }
+        
+        .folder-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px; /* More rounded corners for XP feel */
             text-align: center;
-            margin: 0 auto 20px auto;
-            display: block;
-            max-width: 300px;
-            box-shadow: 0 0 10px rgba(245, 224, 80, 0.5);
-            transition: all 0.3s ease;
-            text-decoration: none;
-            font-family: 'Lora', serif;
         }
         
-        .menu-section, .cart-section {
-            margin-bottom: 30px;
+        .folder-item:hover {
+            background-color: #316AC5;
+            color: white;
         }
         
-        .cart-section {
-            background-color: #F8F7F2;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(10, 26, 47, 0.2);
-            border: 2px solid #F5E050;
+        .folder-item img {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 5px;
         }
         
-        .cart-section h2 {
-            color: #0A1A2F;
-            border-bottom: 2px solid #F5E050;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+        .menu-item {
+            background-color: white;
+            border: 1px solid #D4D0C8;
+            border-radius: 6px; /* More rounded corners for XP feel */
+            margin-bottom: 10px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .menu-item:hover {
+            background-color: #F0F0F0;
+        }
+        
+        .add-button {
+            /* Add these styles to your CSS */
+            .quantity-controls {
+                display: flex;
+                align-items: center;
+            }
+            
+            .quantity-btn {
+                background: linear-gradient(to bottom, #FDFDFD 0%, #F6F6F6 50%, #E8E8E8 100%);
+                border: 1px solid #999;
+                border-radius: 4px;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: bold;
+            }
+            
+            .quantity-display {
+                margin: 0 8px;
+                font-weight: bold;
+                min-width: 20px;
+                text-align: center;
+            }
+            
+            .folder-item {
+                background-color: #FFFFFF;
+                border: 1px solid transparent;
+            }
+            
+            .folder-item:hover {
+                background-color: #316AC5;
+                color: white;
+                border: 1px dotted #FFFFFF;
+            }
+            border: 1px solid #999;
+            border-radius: 6px; /* More rounded corners for XP feel */
+            padding: 3px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .add-button:hover {
+            background: linear-gradient(to bottom, #F6F6F6 0%, #E8E8E8 50%, #DCDCDC 100%);
+        }
+        
+        .cart-window {
+            position: fixed;
+            right: 20px;
+            bottom: 60px;
+            width: 320px;
+            background: #ECE9D8;
+            border: 1px solid #0054E3;
+            border-radius: 5px 5px 0 0;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            z-index: 101;
+            display: none;
+        }
+        
+        .cart-header {
+            height: 30px;
+            background: linear-gradient(to right, #0058E6 0%, #2B91ED 50%, #0058E6 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .cart-content {
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .cart-item {
+            background-color: white;
+            border: 1px solid #D4D0C8;
+            border-radius: 3px;
+            margin-bottom: 5px;
+            padding: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-total {
+            padding: 10px;
+            border-top: 1px solid #D4D0C8;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+        
+        .order-form {
+            padding: 10px;
+            border-top: 1px solid #D4D0C8;
         }
         
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            color: #0A1A2F;
-            font-weight: 500;
+            margin-bottom: 3px;
+            font-size: 12px;
         }
         
         .input-field {
             width: 100%;
-            background: #F8F7F2;
-            border: 2px solid #F5E050;
-            border-radius: 8px;
-            padding: 10px;
-            color: #0A1A2F;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            font-family: 'Lora', serif;
+            padding: 5px;
+            border: 1px solid #7F9DB9;
+            border-radius: 2px;
+            font-family: 'Tahoma', sans-serif;
+            font-size: 12px;
         }
         
         .order-button {
             width: 100%;
-            background: #0A1A2F;
-            color: #F5E050;
-            border: none;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: 600;
+            background: linear-gradient(to bottom, #FDFDFD 0%, #F6F6F6 50%, #E8E8E8 100%);
+            border: 1px solid #999;
+            border-radius: 3px;
+            padding: 5px;
             cursor: pointer;
-            transition: background 0.3s ease, color 0.3s ease;
-            font-family: 'Lora', serif;
+            font-family: 'Tahoma', sans-serif;
+            font-size: 12px;
+            margin-top: 10px;
         }
         
-        .floating-cart {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #0A1A2F;
-            color: #F5E050;
-            padding: 10px 15px;
-            border-radius: 50px;
-            box-shadow: 0 0 15px rgba(245, 224, 80, 0.4);
-            border: 2px solid #F5E050;
-            z-index: 100;
-            transition: opacity 0.3s ease;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 20px;
-            margin-top: 40px;
-            border-top: 1px solid #F5E050;
+        .order-button:hover {
+            background: linear-gradient(to bottom, #F6F6F6 0%, #E8E8E8 50%, #DCDCDC 100%);
         }
         
         .hidden {
             display: none;
         }
+        
+        .desktop-icon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 2px;
+        }
+        
+        .desktop-icon:hover {
+            background-color: rgba(49, 106, 197, 0.5);
+            color: white;
+        }
+        
+        .desktop-icon img {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 5px;
+        }
+        
+        .desktop-icon span {
+            text-align: center;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <a href="https://ujjain-tourism.vercel.app/" target="_blank" class="places-button">Places to Visit in Ujjain</a>
-            <h1 style="color: #F5E050; text-align: center; margin-bottom: 10px;">RAI GUEST HOUSE</h1>
-            <h2 style="color: #F5E050; text-align: center; margin-bottom: 20px;">Restaurant Menu</h2>
-        </header>
-        
-        <div class="menu-section">
-            <div id="menu-items">
-                <!-- Menu items will be loaded here by JavaScript -->
-            </div>
-        </div>
-        
-        <div id="cart-section" class="cart-section">
-            <h2>Your Cart</h2>
-            <div id="cart-items">
-                <!-- Cart items will be loaded here by JavaScript -->
-                <div class="text-base text-center p-3">Your cart is empty</div>
-            </div>
-            <div class="total-section" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #F5E050;">
-                <div style="display: flex; justify-content: space-between; color: #0A1A2F;">
-                    <span style="font-weight: bold;">Total:</span>
-                    <span style="font-weight: bold;">₹<span id="cart-total">0</span></span>
-                </div>
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <div class="form-group">
-                    <label for="room-number">Room Number:</label>
-                    <input type="text" id="room-number" class="input-field" placeholder="Enter your room number">
-                </div>
-                
-                <div class="form-group">
-                    <label for="mobile-number">Mobile Number:</label>
-                    <input type="tel" id="mobile-number" class="input-field" placeholder="Enter your mobile number">
-                </div>
-                
-                <div class="form-group" style="display: flex; align-items: center; margin-bottom: 20px;">
-                    <input type="checkbox" id="terms-checkbox" style="margin-right: 10px;">
-                    <label for="terms-checkbox" style="color: #0A1A2F; margin: 0;">I agree to the terms and conditions</label>
-                </div>
-                
-                <button id="submit-order" class="order-button">Place Order</button>
-            </div>
-        </div>
-        
-        <footer>
-            <p>&copy; 2023 Rai Guest House. All rights reserved.</p>
-        </footer>
+    <!-- Desktop Icon -->
+    <div class="desktop-icon" id="menu-icon">
+        <img src="https://win98icons.alexmeub.com/icons/png/directory_open-4.png" alt="Menu">
+        <span>Restaurant Menu</span>
     </div>
     
-    <div class="floating-cart">
-        <span>Total: ₹<span id="floating-total">0</span></span>
+    <!-- Windows -->
+    <div class="window" id="menu-window">
+        <div class="window-header">
+            <div class="window-title">
+                <img src="https://win98icons.alexmeub.com/icons/png/directory_open-4.png" alt="Folder">
+                <span>Restaurant Menu</span>
+            </div>
+            <div class="window-controls">
+                <div class="window-control window-close" onclick="closeWindow('menu-window')">✕</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="folder-view" id="menu-categories">
+                <!-- Categories will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="window" id="category-window">
+        <div class="window-header">
+            <div class="window-title">
+                <img src="https://win98icons.alexmeub.com/icons/png/directory_open-4.png" alt="Folder">
+                <span id="category-title">Category</span>
+            </div>
+            <div class="window-controls">
+                <div class="window-control window-close" onclick="closeWindow('category-window')">✕</div>
+            </div>
+        </div>
+        <div class="window-content" id="category-content">
+            <!-- Menu items will be loaded here by JavaScript -->
+        </div>
+    </div>
+    
+    <!-- Cart Window -->
+    <div class="cart-window" id="cart-window">
+        <div class="cart-header">
+            <div class="window-title">
+                <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_full-4.png" alt="Cart">
+                <span>Shopping Cart</span>
+            </div>
+            <div class="window-controls">
+                <div class="window-control window-close" onclick="toggleCart()">✕</div>
+            </div>
+        </div>
+        <div class="cart-content" id="cart-items">
+            <!-- Cart items will be loaded here by JavaScript -->
+            <div style="text-align: center; padding: 20px;">Your cart is empty</div>
+        </div>
+        <div class="cart-total">
+            <span>Total:</span>
+            <span>₹<span id="cart-total">0</span></span>
+        </div>
+        <div class="order-form">
+            <div class="form-group">
+                <label for="room-number">Room Number:</label>
+                <input type="text" id="room-number" class="input-field" placeholder="Enter your room number">
+            </div>
+            
+            <div class="form-group">
+                <label for="mobile-number">Mobile Number:</label>
+                <input type="tel" id="mobile-number" class="input-field" placeholder="Enter your mobile number">
+            </div>
+            
+            <div class="form-group" style="display: flex; align-items: center;">
+                <input type="checkbox" id="terms-checkbox" style="margin-right: 5px;">
+                <label for="terms-checkbox" style="margin: 0; font-size: 12px;">I agree to the terms and conditions</label>
+            </div>
+            
+            <button id="submit-order" class="order-button">Place Order</button>
+        </div>
+    </div>
+    
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <div class="start-button" id="start-button">
+            <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png" alt="Start">
+            <span>Start</span>
+        </div>
+        <div id="cart-icon" onclick="toggleCart()" style="margin-left: auto; cursor: pointer; display: flex; align-items: center; color: white;">
+            <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_full-4.png" alt="Cart" style="width: 20px; height: 20px; margin-right: 5px;">
+            <span>Cart: ₹<span id="taskbar-total">0</span></span>
+        </div>
+    </div>
+    
+    <!-- Start Menu -->
+    <div class="start-menu" id="start-menu">
+        <div class="start-menu-header">
+            Rai Guest House
+        </div>
+        <div class="start-menu-items">
+            <div class="start-menu-item" onclick="openWindow('menu-window')">
+                <img src="https://win98icons.alexmeub.com/icons/png/directory_open-4.png" alt="Menu">
+                <span>Restaurant Menu</span>
+            </div>
+            <div class="start-menu-item" onclick="toggleCart()">
+                <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_full-4.png" alt="Cart">
+                <span>Shopping Cart</span>
+            </div>
+            <div class="start-menu-item" onclick="window.open('https://ujjain-tourism.vercel.app/', '_blank')">
+                <img src="https://win98icons.alexmeub.com/icons/png/world-4.png" alt="Places">
+                <span>Places to Visit in Ujjain</span>
+            </div>
+        </div>
     </div>
     
     <script src="script.js"></script>
